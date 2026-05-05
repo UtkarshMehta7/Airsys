@@ -1,0 +1,136 @@
+{
+  "IGI Airport": { "lat": 28.5562, "lon": 77.1000 },
+  "Mumbai Airport": { "lat": 19.0896, "lon": 72.8656 },
+  "Bangalore Airport": { "lat": 13.1986, "lon": 77.7066 },
+  "Hyderabad Airport": { "lat": 17.2403, "lon": 78.4294 },
+  "Chennai Airport": { "lat": 12.9941, "lon": 80.1709 },
+
+  "Kolkata Airport": { "lat": 22.6547, "lon": 88.4467 },
+  "Ahmedabad Airport": { "lat": 23.0734, "lon": 72.6266 },
+  "Pune Airport": { "lat": 18.5822, "lon": 73.9197 },
+  "Goa Airport": { "lat": 15.3808, "lon": 73.8314 },
+  "Lucknow Airport": { "lat": 26.7606, "lon": 80.8893 },
+
+  "Jaipur Airport": { "lat": 26.8242, "lon": 75.8122 },
+  "Varanasi Airport": { "lat": 25.4524, "lon": 82.8593 },
+  "Patna Airport": { "lat": 25.5913, "lon": 85.0880 },
+  "Ranchi Airport": { "lat": 23.3143, "lon": 85.3217 },
+  "Raipur Airport": { "lat": 21.1804, "lon": 81.7388 },
+
+  "Bhubaneswar Airport": { "lat": 20.2547, "lon": 85.8178 },
+  "Guwahati Airport": { "lat": 26.1061, "lon": 91.5859 },
+  "Dibrugarh Airport": { "lat": 27.4839, "lon": 95.0169 },
+  "Agartala Airport": { "lat": 23.8869, "lon": 91.2404 },
+  "Shillong Airport": { "lat": 25.7036, "lon": 91.9787 },
+
+  "Kochi Airport": { "lat": 10.1520, "lon": 76.4019 },
+  "Trivandrum Airport": { "lat": 8.4821, "lon": 76.9201 },
+  "Calicut Airport": { "lat": 11.1368, "lon": 75.9553 },
+  "Coimbatore Airport": { "lat": 11.0300, "lon": 77.0434 },
+  "Madurai Airport": { "lat": 9.8345, "lon": 78.0934 },
+
+  "Nagpur Airport": { "lat": 21.0922, "lon": 79.0472 },
+  "Indore Airport": { "lat": 22.7218, "lon": 75.8011 },
+  "Bhopal Airport": { "lat": 23.2875, "lon": 77.3374 },
+  "Surat Airport": { "lat": 21.1141, "lon": 72.7418 },
+  "Vadodara Airport": { "lat": 22.3362, "lon": 73.2263 },
+
+  "Amritsar Airport": { "lat": 31.7096, "lon": 74.7973 },
+  "Chandigarh Airport": { "lat": 30.6735, "lon": 76.7885 },
+  "Dehradun Airport": { "lat": 30.1897, "lon": 78.1803 },
+  "Shimla Airport": { "lat": 31.0818, "lon": 77.0680 },
+  "Kullu Airport": { "lat": 31.8767, "lon": 77.1544 },
+
+  "Jammu Airport": { "lat": 32.6891, "lon": 74.8374 },
+  "Srinagar Airport": { "lat": 33.9871, "lon": 74.7742 },
+  "Leh Airport": { "lat": 34.1359, "lon": 77.5465 },
+
+  "Port Blair Airport": { "lat": 11.6412, "lon": 92.7297 },
+  "Agatti Airport": { "lat": 10.8237, "lon": 72.1760 },
+
+  "Vijayawada Airport": { "lat": 16.5304, "lon": 80.7968 },
+  "Visakhapatnam Airport": { "lat": 17.7210, "lon": 83.2245 },
+  "Tirupati Airport": { "lat": 13.6325, "lon": 79.5433 },
+  "Rajahmundry Airport": { "lat": 17.1104, "lon": 81.8182 },
+
+  "Mangalore Airport": { "lat": 12.9613, "lon": 74.8901 },
+  "Hubli Airport": { "lat": 15.3617, "lon": 75.0849 },
+  "Belgaum Airport": { "lat": 15.8593, "lon": 74.6183 },
+
+  "Bagdogra Airport": { "lat": 26.6812, "lon": 88.3286 },
+  "Durgapur Airport": { "lat": 23.6225, "lon": 87.2430 },
+
+  "Jorhat Airport": { "lat": 26.7315, "lon": 94.1755 },
+  "Tezpur Airport": { "lat": 26.7091, "lon": 92.7847 },
+  "Silchar Airport": { "lat": 24.9129, "lon": 92.9787 },
+
+  "Aizawl Airport": { "lat": 23.8406, "lon": 92.6197 },
+  "Dimapur Airport": { "lat": 25.8839, "lon": 93.7711 },
+
+  "Jharsuguda Airport": { "lat": 21.9135, "lon": 84.0504 },
+  "Gaya Airport": { "lat": 24.7443, "lon": 84.9512 },
+
+  "Kolhapur Airport": { "lat": 16.6647, "lon": 74.2894 },
+  "Aurangabad Airport": { "lat": 19.8627, "lon": 75.3980 },
+  "Shirdi Airport": { "lat": 19.6880, "lon": 74.3789 },
+
+  "Hisar Airport": { "lat": 29.1794, "lon": 75.7553 },
+  "Bathinda Airport": { "lat": 30.2701, "lon": 74.7553 },
+
+  "Cooch Behar Airport": { "lat": 26.3305, "lon": 89.4672 },
+
+  "Pakyong Airport": { "lat": 27.2346, "lon": 88.5884 },
+
+  "Darbhanga Airport": { "lat": 26.1931, "lon": 85.9170 },
+
+  "Deoghar Airport": { "lat": 24.4438, "lon": 86.6994 },
+
+  "Kushinagar Airport": { "lat": 26.7397, "lon": 83.8867 },
+
+  "Ayodhya Airport": { "lat": 26.7518, "lon": 82.1458 },
+
+  "Gwalior Airport": { "lat": 26.2933, "lon": 78.2278 },
+  "Jabalpur Airport": { "lat": 23.1778, "lon": 80.0520 },
+  "Udaipur Airport": { "lat": 24.6177, "lon": 73.8961 },
+  "Jodhpur Airport": { "lat": 26.2511, "lon": 73.0489 },
+  "Bikaner Airport": { "lat": 28.0706, "lon": 73.2072 },
+  "Kota Airport": { "lat": 25.1602, "lon": 75.8456 },
+  "Aligarh Airport": { "lat": 27.9000, "lon": 78.0800 },
+  "Bareilly Airport": { "lat": 28.4221, "lon": 79.4508 },
+  "Kanpur Airport": { "lat": 26.4043, "lon": 80.4101 },
+  "Meerut Airport": { "lat": 28.9845, "lon": 77.7064 },
+
+  "Porbandar Airport": { "lat": 21.6487, "lon": 69.6572 },
+  "Kandla Airport": { "lat": 23.1127, "lon": 70.1003 },
+  "Bhuj Airport": { "lat": 23.2878, "lon": 69.6702 },
+  "Jamnagar Airport": { "lat": 22.4655, "lon": 70.0126 },
+  "Rajkot Airport": { "lat": 22.3092, "lon": 70.7795 },
+
+  "Nashik Airport": { "lat": 19.9637, "lon": 73.8076 },
+  "Solapur Airport": { "lat": 17.6280, "lon": 75.9340 },
+  "Akola Airport": { "lat": 20.6980, "lon": 77.0586 },
+  "Amravati Airport": { "lat": 20.9374, "lon": 77.7796 },
+
+  "Tanjore Airport": { "lat": 10.7224, "lon": 79.1019 },
+  "Vellore Airport": { "lat": 12.9081, "lon": 79.1330 },
+  "Hosur Airport": { "lat": 12.7418, "lon": 77.8253 },
+
+  "Kozhikode Airport": { "lat": 11.1368, "lon": 75.9553 },
+
+  "Warangal Airport": { "lat": 17.9189, "lon": 79.5985 },
+
+  "Rourkela Airport": { "lat": 22.2560, "lon": 84.8146 },
+
+  "Balurghat Airport": { "lat": 25.2616, "lon": 88.7956 },
+  "Malda Airport": { "lat": 25.0108, "lon": 88.1411 },
+
+  "Along Airport": { "lat": 28.1746, "lon": 94.8020 },
+  "Pasighat Airport": { "lat": 28.0661, "lon": 95.3356 },
+  "Tezu Airport": { "lat": 27.9412, "lon": 96.1344 },
+  "Ziro Airport": { "lat": 27.5883, "lon": 93.8286 },
+
+  "Kargil Airport": { "lat": 34.5042, "lon": 76.1320 },
+
+  "Diu Airport": { "lat": 20.7131, "lon": 70.9211 },
+  "Daman Airport": { "lat": 20.4340, "lon": 72.8432 }
+}
