@@ -135,15 +135,13 @@ if not os.path.exists("crowd_model.pkl") or not os.path.exists("delay_model.pkl"
 # STEP 5: FLASK API
 # =========================
 
-CORS(app)
-
 app = Flask(__name__)
+CORS(app)
 
 # Home route to check server status
 @app.route("/")
 def home():
     return "Airport AI Backend is Running 🚀"
-CORS(app)
 
 # Load saved model
 model = pickle.load(open("crowd_model.pkl", "rb"))
