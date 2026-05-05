@@ -28,7 +28,60 @@ def normalize_weather(w):
 # STEP 1: DATA GENERATION
 # =========================
 
+
 n = 3000
+
+# =========================
+# ALWAYS CREATE BASE DATASET (USED AT RUNTIME)
+# =========================
+
+time_vals = np.random.randint(0, 24, n)
+day_type = np.random.choice(["Weekday", "Weekend"], n)
+weather = np.random.choice(["Clear", "Rainy", "Fog"], n)
+event_day = np.random.choice([0, 1], n)
+
+passengers = []
+flight_count = []
+avg_luggage = []
+
+for t, d, w, e in zip(time_vals, day_type, weather, event_day):
+    if 6 <= t <= 10 or 17 <= t <= 21:
+        p = np.random.randint(1000, 2000)
+    else:
+        p = np.random.randint(200, 1000)
+
+    if d == "Weekend":
+        p += 300
+    if e == 1:
+        p += 400
+    if w == "Rainy":
+        p -= 200
+    elif w == "Fog":
+        p -= 300
+
+    passengers.append(max(100, p))
+    flight_count.append(int(p / 50))
+    avg_luggage.append(np.random.randint(1, 5))
+
+crowd = []
+for p in passengers:
+    if p > 1500:
+        crowd.append("High")
+    elif p > 700:
+        crowd.append("Medium")
+    else:
+        crowd.append("Low")
+
+df = pd.DataFrame({
+    "time": time_vals,
+    "passengers": passengers,
+    "day_type": day_type,
+    "weather": weather,
+    "event_day": event_day,
+    "flight_count": flight_count,
+    "avg_luggage": avg_luggage,
+    "crowd": crowd
+})
 
 if not os.path.exists("crowd_model.pkl") or not os.path.exists("delay_model.pkl"):
     print("Training model...")
