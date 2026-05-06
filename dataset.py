@@ -1124,10 +1124,57 @@ def dashboard_data():
     # Traffic impact (from dataset)
     avg_passengers = filtered_df["passengers"].mean()
 
-    if avg_passengers > 1400:
+    # =========================
+    # AIRPORT-SPECIFIC SCALING
+    # =========================
+    airport_factor = {
+        "Delhi": 1.2,
+        "Mumbai": 1.1,
+        "Dubai": 1.3,
+        "Frankfurt": 1.0,
+        "Heathrow": 1.25,
+        "JFK": 1.15,
+        "LAX": 1.1,
+        "Singapore": 0.9,
+        "Sydney": 0.85,
+        "Johannesburg": 0.8
+    }
+
+    factor = airport_factor.get(airport_key, 1.0)
+    avg_passengers *= factor
+
+    if avg_passengers > 1600:
+        risk_score += 50
+    elif avg_passengers > 1300:
         risk_score += 40
-    elif avg_passengers > 900:
-        risk_score += 25
+    elif avg_passengers > 1000:
+        risk_score += 30
+    elif avg_passengers > 700:
+        risk_score += 20
+    else:
+        risk_score += 10
+
+    # =========================
+    # TIME-BASED IMPACT
+    # =========================
+    from datetime import datetime
+    current_hour = datetime.now().hour
+
+    if 17 <= current_hour <= 21:
+        risk_score += 20
+    elif 6 <= current_hour <= 10:
+        risk_score += 15
+
+    # =========================
+    # RANDOM MICRO VARIATION
+    # =========================
+    import random
+    risk_score += random.randint(-5, 5)
+
+    # =========================
+    # NORMALIZE SCORE
+    # =========================
+    risk_score = max(0, min(100, risk_score))
 
 # =========================
 # ML DELAY PREDICTION (REAL-TIME)
