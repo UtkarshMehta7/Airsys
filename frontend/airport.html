@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Airport AI System</title>
 <link rel="icon" type="image/png" href="logo.png">
@@ -558,6 +560,187 @@ body {
 
     font-size:13px;
 }
+
+/* =========================
+   UI POLISH
+   ========================= */
+
+.ico {
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.sidebar button {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.dashboard-grid {
+    gap:18px;
+}
+
+.dashboard-grid .card {
+    background:linear-gradient(145deg, rgba(2,6,23,0.78), rgba(0,0,0,0.55));
+    border:1px solid rgba(56,189,248,0.3);
+    border-radius:18px;
+    padding:18px 20px;
+    box-shadow:0 0 25px rgba(56,189,248,0.08);
+}
+
+.dashboard-grid .card:hover {
+    transform:translateY(-3px);
+    box-shadow:0 0 30px rgba(56,189,248,0.25);
+}
+
+.card-title {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 0 16px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:1.8px;
+    text-transform:uppercase;
+    color:#7dd3fc;
+}
+
+.card-title .ico {
+    width:20px;
+    height:20px;
+    padding:6px;
+    border-radius:10px;
+    background:rgba(56,189,248,0.12);
+    box-shadow:0 0 12px rgba(56,189,248,0.2);
+}
+
+#radarCanvas {
+    height:380px;
+    display:block;
+}
+
+.stat-grid {
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+}
+
+.stat {
+    background:rgba(15,23,42,0.6);
+    border:1px solid rgba(56,189,248,0.15);
+    border-radius:14px;
+    padding:12px 14px;
+}
+
+.stat-label {
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:rgba(186,230,253,0.6);
+    margin-bottom:6px;
+}
+
+.stat-value {
+    font-size:20px;
+    font-weight:700;
+    color:#e0f2fe;
+    margin:0;
+}
+
+.risk-head {
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:14px;
+}
+
+.risk-score {
+    font-size:40px;
+    font-weight:800;
+    color:#e0f2fe;
+    margin:0;
+}
+
+.risk-score small {
+    font-size:16px;
+    font-weight:600;
+    color:rgba(186,230,253,0.5);
+    margin-left:4px;
+}
+
+.risk-badge {
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    border:1px solid currentColor;
+    background:rgba(255,255,255,0.04);
+}
+
+.risk-track {
+    height:10px;
+    border-radius:999px;
+    background:rgba(148,163,184,0.18);
+    overflow:hidden;
+}
+
+#riskFill {
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    box-shadow:0 0 12px currentColor;
+}
+
+.chart-wrap {
+    position:relative;
+    height:260px;
+}
+
+.chat-row {
+    display:flex;
+    gap:10px;
+}
+
+.chat-row input {
+    flex:1;
+    padding:12px 16px;
+    border-radius:12px;
+    background:rgba(2,6,23,0.8);
+    border:1px solid rgba(56,189,248,0.5);
+    font-size:14px;
+    outline:none;
+}
+
+.chat-row input:focus {
+    box-shadow:0 0 12px rgba(56,189,248,0.4);
+}
+
+.chat-row button {
+    padding:12px 22px;
+    border-radius:12px;
+    font-weight:700;
+}
+
+@media (max-width: 800px) {
+    .layout { grid-template-columns:1fr; padding:12px; gap:14px; }
+    .layout > * { min-width:0; }
+    .panel { padding:16px; border-radius:20px; }
+    #dashboardSection h2 { font-size:28px !important; }
+    #dashboardSection > div { flex-wrap:wrap; gap:10px; }
+    .sidebar { width:auto; }
+    .dashboard-grid { grid-template-columns:1fr; }
+    .full { grid-column:span 1; }
+    .stat-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
 
@@ -615,17 +798,17 @@ padding-left:4px;
 ">
 GLOBAL AVIATION INTELLIGENCE
 </div>
-        <button onclick="showSection('dashboard')">📊 Dashboard</button>
-        <button onclick="showSection('chat')">🤖 AI Chat</button>
-        <button onclick="showSection('alerts')">🚨 Alerts</button>
+        <button onclick="showSection('dashboard')"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</button>
+        <button onclick="showSection('chat')"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="3"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 13v2M15 13v2"/></svg>AI Chat</button>
+        <button onclick="showSection('alerts')"><svg class="ico" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Alerts</button>
     </div>
 
     <!-- LEFT: CHAT -->
     <div id="chatSection" class="panel section">
         <h2 class="glow">🤖 AI Control</h2>
         <div id="chatbox" class="card"></div>
-        <div style="display:flex; gap:10px;">
-            <input id="msg" placeholder="Ask airport status...">
+        <div class="chat-row">
+            <input id="msg" placeholder="Ask about crowds, delays or risk at any airport...">
             <button onclick="send()">Send</button>
         </div>
     </div>
@@ -658,7 +841,7 @@ LIVE AIRSPACE ANALYTICS
 </div>
         <p id="activeAirport" style="color:#38bdf8; margin-top:-5px;">Active: Delhi</p>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <div style="color:#38bdf8; font-weight:bold;">🌍 Global Hub Mode</div>
+            <div style="color:#38bdf8; font-weight:bold; display:flex; align-items:center; gap:8px;"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>Global Hub Mode</div>
 
             <select id="airportSelect" style="padding:12px 18px;background:rgba(2,6,23,0.8);color:#7dd3fc;border:1px solid rgba(56,189,248,0.5);border-radius:14px;font-size:14px;backdrop-filter:blur(10px);box-shadow:0 0 15px rgba(56,189,248,0.15);">
                 <option value="Delhi">🇮🇳 Delhi (Asia)</option>
@@ -676,28 +859,44 @@ LIVE AIRSPACE ANALYTICS
         <div class="dashboard-grid">
 
             <div class="card full">
-                <h3>📡 Radar</h3>
+                <h3 class="card-title"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/></svg>Radar</h3>
                 <canvas id="radarCanvas"></canvas>
             </div>
 
             <div class="card">
-                <h3>🌦 Weather</h3>
-                <p id="weatherText">--</p>
-                <p id="visibilityText">--</p>
-                <p id="tempText">--</p>
+                <h3 class="card-title"><svg class="ico" viewBox="0 0 24 24"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41"/><path d="M15.95 12.5A4 4 0 0 0 8.1 11"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg>Weather</h3>
+                <div class="stat-grid">
+                    <div class="stat">
+                        <div class="stat-label">Condition</div>
+                        <p class="stat-value" id="weatherText">--</p>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Visibility</div>
+                        <p class="stat-value" id="visibilityText">--</p>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Temperature</div>
+                        <p class="stat-value" id="tempText">--</p>
+                    </div>
+                </div>
             </div>
 
             <div class="card">
-                <h3>⚠️ Risk</h3>
-                <p id="riskText">--</p>
-                <div style="height:10px; background:#333;">
-                    <div id="riskFill" style="height:100%; width:0%; background:red;"></div>
+                <h3 class="card-title"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>Risk</h3>
+                <div class="risk-head">
+                    <p class="risk-score"><span id="riskText">--</span><small>/ 100</small></p>
+                    <span class="risk-badge" id="riskLevel" style="color:#94a3b8;">--</span>
+                </div>
+                <div class="risk-track">
+                    <div id="riskFill"></div>
                 </div>
             </div>
 
             <div class="card full">
-                <h3>📈 Traffic</h3>
-                <canvas id="chart"></canvas>
+                <h3 class="card-title"><svg class="ico" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Traffic</h3>
+                <div class="chart-wrap">
+                    <canvas id="chart"></canvas>
+                </div>
             </div>
 
         </div>
@@ -835,7 +1034,7 @@ LIVE AIRSPACE ANALYTICS
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <script>
 
@@ -850,6 +1049,7 @@ function showSection(section) {
     if(section === 'dashboard') {
         document.getElementById('dashboardSection').classList.add('active');
         document.querySelectorAll('.sidebar button')[0].classList.add('active');
+        if (window.radarReady) resizeRadar();
     }
     if(section === 'alerts') {
         document.getElementById('alertsSection').classList.add('active');
@@ -860,23 +1060,36 @@ function showSection(section) {
 // Default view
 showSection('dashboard');
 
+function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    }[c]));
+}
+
 async function send() {
-    let input = document.getElementById("msg").value;
+    const msgInput = document.getElementById("msg");
+    let input = msgInput.value.trim();
     if(!input) return;
+    msgInput.value = "";
     let chatbox = document.getElementById("chatbox");
 
-    chatbox.innerHTML += `<div class="msg user-msg">🧑 ${input}</div>`;
+    chatbox.innerHTML += `<div class="msg user-msg">🧑 ${escapeHTML(input)}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
 
     const airport = document.getElementById("airportSelect").value;
-    let res = await fetch("https://airport-ai-backend.onrender.com/chat", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({message: input, airport: airport})
-    });
+    let reply;
+    try {
+        let res = await fetch("https://airport-ai-backend.onrender.com/chat", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({message: input, airport: airport})
+        });
 
-    let data = await res.json();
-
-    let reply = data.reply || "No response from AI";
+        let data = await res.json();
+        reply = data.reply || "No response from AI";
+    } catch (e) {
+        reply = "⚠️ Could not reach the AI backend. It may be waking up, please try again in a few seconds.";
+    }
     chatbox.innerHTML += `
 <div class="msg bot-msg">
 🤖 ${reply}
@@ -916,8 +1129,57 @@ async function sendFeedback(isCorrect) {
     }
 }
 
+document.getElementById("msg").addEventListener("keydown", e => {
+    if (e.key === "Enter") send();
+});
+
 // ---------------- DASHBOARD CORE ----------------
 let chartInstance = null;
+
+// METAR weather codes → readable names
+const WX_CODES = {
+    HZ:"Haze", BR:"Mist", FG:"Fog", FU:"Smoke", DU:"Dust", SA:"Sand",
+    RA:"Rain", DZ:"Drizzle", SN:"Snow", TS:"Thunderstorm", SH:"Showers",
+    GR:"Hail", GS:"Hail", SQ:"Squalls", VC:"Nearby", MI:"Shallow", BC:"Patches"
+};
+
+function formatWeather(w) {
+    if (!w) return "--";
+    const s = String(w).trim();
+
+    // Raw METAR report without a weather group means no significant weather
+    if (/\d{6}Z/.test(s)) return "Clear";
+
+    if (/^[A-Z+\-\s]+$/.test(s)) {
+        return s.split(/\s+/).map(t => {
+            const intensity = t.startsWith("+") ? "Heavy " : t.startsWith("-") ? "Light " : "";
+            const code = t.replace(/^[+-]/, "");
+            const names = (code.match(/.{2}/g) || []).map(p => WX_CODES[p]).filter(Boolean);
+            return names.length ? intensity + names.join(" ") : t;
+        }).join(", ");
+    }
+
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function formatVisibility(v) {
+    const n = parseFloat(v);
+    if (isNaN(n)) return v || "--";
+    if (n >= 10000) return "10+ km";
+    return (n / 1000).toFixed(1) + " km";
+}
+
+function formatTemp(t) {
+    const n = parseFloat(t);
+    if (isNaN(n)) return t || "--";
+    return Math.round(n) + "°C";
+}
+
+function riskLevel(risk) {
+    if (risk > 70) return { label: "High", color: "#ef4444" };
+    if (risk > 40) return { label: "Moderate", color: "#f59e0b" };
+    return { label: "Low", color: "#22c55e" };
+}
 
 async function loadDashboard(airport = "Delhi") {
     document.getElementById("activeAirport").innerText = "Active: " + airport;
@@ -926,21 +1188,26 @@ async function loadDashboard(airport = "Delhi") {
         const data = await res.json();
 
         // Weather
-        document.getElementById("weatherText").innerText = data.weather || "--";
-        document.getElementById("visibilityText").innerText = data.visibility || "--";
-        document.getElementById("tempText").innerText = data.temperature || "--";
+        const weatherName = formatWeather(data.weather);
+        document.getElementById("weatherText").innerText = weatherName;
+        document.getElementById("visibilityText").innerText = formatVisibility(data.visibility);
+        document.getElementById("tempText").innerText = formatTemp(data.temperature);
 
         // Risk
-        let risk = data.risk_score || 0;
+        let risk = Math.round(data.risk_score || 0);
         window.currentAIRisk = risk;
-        window.currentAIWeather = data.weather || "Clear";
+        window.currentAIWeather = weatherName === "--" ? "Clear" : weatherName;
         window.currentAIDelay = data.insight || "Normal";
         document.getElementById("riskText").innerText = risk;
-        document.getElementById("riskFill").style.width = risk + "%";
+        document.getElementById("riskFill").style.width = Math.min(risk, 100) + "%";
 
-        if (risk > 70) document.getElementById("riskFill").style.background = "red";
-        else if (risk > 40) document.getElementById("riskFill").style.background = "orange";
-        else document.getElementById("riskFill").style.background = "lightgreen";
+        const level = riskLevel(risk);
+        const riskFill = document.getElementById("riskFill");
+        riskFill.style.background = level.color;
+        riskFill.style.color = level.color;
+        const riskBadge = document.getElementById("riskLevel");
+        riskBadge.innerText = level.label;
+        riskBadge.style.color = level.color;
 
         // Alerts
         let alertsBox = document.getElementById("alertsList");
@@ -952,20 +1219,57 @@ async function loadDashboard(airport = "Delhi") {
         });
 
         // Chart
-        let times = Object.keys(data.time_vs_passengers || {});
-        let values = Object.values(data.time_vs_passengers || {});
+        let times = Object.keys(data.time_vs_passengers || {})
+            .map(t => /^\d+$/.test(t) ? t.padStart(2, "0") + ":00" : t);
+        let values = Object.values(data.time_vs_passengers || {})
+            .map(v => typeof v === "number" ? Math.round(v) : v);
 
         if (chartInstance) chartInstance.destroy();
 
-        chartInstance = new Chart(document.getElementById("chart"), {
+        const chartCanvas = document.getElementById("chart");
+        const fillGradient = chartCanvas.getContext("2d").createLinearGradient(0, 0, 0, 260);
+        fillGradient.addColorStop(0, "rgba(56,189,248,0.35)");
+        fillGradient.addColorStop(1, "rgba(56,189,248,0)");
+
+        const axisStyle = {
+            ticks: { color: "rgba(186,230,253,0.6)", font: { size: 11 } },
+            grid: { color: "rgba(56,189,248,0.08)" },
+            border: { display: false }
+        };
+
+        chartInstance = new Chart(chartCanvas, {
             type: "line",
             data: {
                 labels: times,
-                datasets: [{ label: "Traffic", data: values }]
+                datasets: [{
+                    label: "Passengers",
+                    data: values,
+                    borderColor: "#38bdf8",
+                    backgroundColor: fillGradient,
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "#38bdf8"
+                }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } }
+                maintainAspectRatio: false,
+                interaction: { mode: "index", intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "rgba(2,6,23,0.95)",
+                        borderColor: "rgba(56,189,248,0.4)",
+                        borderWidth: 1,
+                        titleColor: "#7dd3fc",
+                        bodyColor: "#e0f2fe",
+                        padding: 10
+                    }
+                },
+                scales: { x: axisStyle, y: axisStyle }
             }
         });
 
@@ -1002,14 +1306,40 @@ document.getElementById("airportSelect").addEventListener("change", function(){
 let canvas = document.getElementById("radarCanvas");
 let ctx = canvas.getContext("2d");
 
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
-
 let angle = 0;
 
-const radarCenterX = canvas.width / 2;
-const radarCenterY = canvas.height / 2;
-const radarRadius = 120;
+// Logical (CSS pixel) size of the radar; the backing store is scaled for sharp retina rendering
+let W = 0;
+let H = 0;
+let radarCenterX = 0;
+let radarCenterY = 0;
+let radarRadius = 120;
+
+function resizeRadar(){
+    if(canvas.offsetWidth === 0) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    radarCenterX = W / 2;
+    radarCenterY = H / 2;
+    radarRadius = Math.min(H * 0.42, 170);
+}
+
+resizeRadar();
+window.addEventListener("resize", resizeRadar);
+window.radarReady = true;
+
+const RISK_COLORS = {
+    LOW: "#22c55e",
+    MEDIUM: "#f59e0b",
+    HIGH: "#ef4444"
+};
 
 let flights = [];
 window.currentAIRisk = 40;
@@ -1045,20 +1375,20 @@ function randomEdgePosition(){
     const edge = Math.floor(Math.random() * 4);
 
     if(edge === 0){
-        return { x: 0, y: Math.random() * canvas.height };
+        return { x: 0, y: Math.random() * H };
     }
 
     if(edge === 1){
-        return { x: canvas.width, y: Math.random() * canvas.height };
+        return { x: W, y: Math.random() * H };
     }
 
     if(edge === 2){
-        return { x: Math.random() * canvas.width, y: 0 };
+        return { x: Math.random() * W, y: 0 };
     }
 
     return {
-        x: Math.random() * canvas.width,
-        y: canvas.height
+        x: Math.random() * W,
+        y: H
     };
 }
 
@@ -1071,10 +1401,11 @@ function createFlights(){
 
     for(let i=0;i<count;i++){
 
-        const pos = randomEdgePosition();
+        // start anywhere on the scope so the radar is populated immediately
+        const pos = { x: Math.random() * W, y: Math.random() * H };
 
         const angle = Math.random() * Math.PI * 2;
-        let speed = Math.random() * 1.5 + 0.5;
+        let speed = Math.random() * 0.8 + 0.3;
 
         // AI delay prediction effect
         if(String(window.currentAIDelay).toLowerCase().includes("delay")){
@@ -1107,7 +1438,7 @@ function createFlights(){
             vy: Math.sin(angle) * speed,
             altitude: Math.floor(Math.random() * 40000),
             speed: Math.floor(Math.random() * 300 + 650),
-            heading: Math.floor(Math.random() * 360),
+            heading: angle * 180 / Math.PI,
             airline: airlines[Math.floor(Math.random()*airlines.length)],
             model: aircraftModels[Math.floor(Math.random()*aircraftModels.length)],
             route: routes[Math.floor(Math.random()*routes.length)],
@@ -1119,7 +1450,18 @@ function createFlights(){
 
 createFlights();
 
+function roundedRect(x, y, w, h, r){
+    ctx.beginPath();
+    if(ctx.roundRect){
+        ctx.roundRect(x, y, w, h, r);
+    } else {
+        ctx.rect(x, y, w, h);
+    }
+}
+
 function drawRadarGrid(){
+
+    ctx.save();
 
     // outer holographic glow
     const gradient = ctx.createRadialGradient(
@@ -1131,14 +1473,14 @@ function drawRadarGrid(){
         radarRadius + 80
     );
 
-    gradient.addColorStop(0, "rgba(0,255,180,0.18)");
-    gradient.addColorStop(0.4, "rgba(0,180,255,0.08)");
+    gradient.addColorStop(0, "rgba(0,255,180,0.14)");
+    gradient.addColorStop(0.4, "rgba(0,180,255,0.06)");
     gradient.addColorStop(1, "rgba(0,0,0,0)");
 
     ctx.fillStyle = gradient;
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillRect(0,0,W,H);
 
-    // animated concentric rings
+    // concentric rings
     for(let i=1;i<=4;i++){
 
         ctx.beginPath();
@@ -1151,38 +1493,47 @@ function drawRadarGrid(){
             Math.PI * 2
         );
 
-        ctx.strokeStyle = `rgba(56,189,248,${0.15 + i*0.08})`;
-        ctx.lineWidth = i === 4 ? 2.5 : 1;
+        ctx.strokeStyle = `rgba(56,189,248,${0.12 + i*0.07})`;
+        ctx.lineWidth = i === 4 ? 2 : 1;
 
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 10;
         ctx.shadowColor = "rgba(56,189,248,0.4)";
 
         ctx.stroke();
     }
 
-    // rotating pulse ring
+    ctx.shadowBlur = 0;
+
+    // range labels
+    ctx.font = "10px Inter, Arial, sans-serif";
+    ctx.fillStyle = "rgba(125,211,252,0.45)";
+    for(let i=1;i<=4;i++){
+        ctx.fillText((i * 10) + " nm", radarCenterX + 4, radarCenterY - radarRadius * (i/4) + 12);
+    }
+
+    // breathing pulse ring
     ctx.beginPath();
     ctx.arc(
         radarCenterX,
         radarCenterY,
-        radarRadius + Math.sin(Date.now()*0.002)*8,
+        radarRadius + Math.sin(Date.now()*0.002)*6,
         0,
         Math.PI * 2
     );
 
-    ctx.strokeStyle = "rgba(0,255,180,0.12)";
-    ctx.lineWidth = 8;
+    ctx.strokeStyle = "rgba(0,255,180,0.1)";
+    ctx.lineWidth = 6;
     ctx.stroke();
 
     // crosshair lines
     ctx.beginPath();
-    ctx.moveTo(radarCenterX - radarRadius - 30, radarCenterY);
-    ctx.lineTo(radarCenterX + radarRadius + 30, radarCenterY);
+    ctx.moveTo(radarCenterX - radarRadius - 20, radarCenterY);
+    ctx.lineTo(radarCenterX + radarRadius + 20, radarCenterY);
 
-    ctx.moveTo(radarCenterX, radarCenterY - radarRadius - 30);
-    ctx.lineTo(radarCenterX, radarCenterY + radarRadius + 30);
+    ctx.moveTo(radarCenterX, radarCenterY - radarRadius - 20);
+    ctx.lineTo(radarCenterX, radarCenterY + radarRadius + 20);
 
-    ctx.strokeStyle = "rgba(56,189,248,0.12)";
+    ctx.strokeStyle = "rgba(56,189,248,0.15)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -1190,23 +1541,33 @@ function drawRadarGrid(){
     if(String(window.currentAIWeather).toLowerCase().includes("fog")){
 
         ctx.fillStyle = "rgba(255,255,255,0.04)";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillRect(0,0,W,H);
     }
+
+    ctx.restore();
 }
 
 function drawRadarSweep(){
 
-    const sweepGradient = ctx.createLinearGradient(
-        radarCenterX,
-        radarCenterY,
-        radarCenterX + radarRadius * Math.cos(angle),
-        radarCenterY + radarRadius * Math.sin(angle)
-    );
+    ctx.save();
 
-    sweepGradient.addColorStop(0, "rgba(0,255,180,0)");
-    sweepGradient.addColorStop(0.4, "rgba(0,255,180,0.18)");
-    sweepGradient.addColorStop(1, "rgba(0,255,180,0.95)");
+    // fading sweep trail
+    for(let i=0;i<24;i++){
+        ctx.beginPath();
+        ctx.moveTo(radarCenterX, radarCenterY);
+        ctx.arc(
+            radarCenterX,
+            radarCenterY,
+            radarRadius,
+            angle - (i+1) * 0.025,
+            angle - i * 0.025
+        );
+        ctx.closePath();
+        ctx.fillStyle = `rgba(0,255,180,${0.16 * (1 - i/24)})`;
+        ctx.fill();
+    }
 
+    // sweep beam
     ctx.beginPath();
     ctx.moveTo(radarCenterX, radarCenterY);
 
@@ -1215,33 +1576,73 @@ function drawRadarSweep(){
         radarCenterY + radarRadius * Math.sin(angle)
     );
 
-    ctx.strokeStyle = sweepGradient;
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(0,255,180,0.9)";
+    ctx.lineWidth = 2;
 
-    ctx.shadowBlur = 35;
+    ctx.shadowBlur = 20;
     ctx.shadowColor = "rgba(0,255,180,0.9)";
 
     ctx.stroke();
 
-    // sweep glow cone
-    ctx.beginPath();
-    ctx.moveTo(radarCenterX, radarCenterY);
-
-    ctx.arc(
-        radarCenterX,
-        radarCenterY,
-        radarRadius,
-        angle - 0.15,
-        angle + 0.15
-    );
-
-    ctx.closePath();
-
-    ctx.fillStyle = "rgba(0,255,180,0.05)";
-    ctx.fill();
+    ctx.restore();
 }
 
-function drawFlights(){
+function boxesOverlap(a, b){
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function drawFlightLabel(flight, occupied){
+
+    const title = flight.airline + " " + flight.model;
+    const sub = flight.route + "  ·  " + flight.altitude.toLocaleString() + " ft";
+
+    ctx.font = "600 11px Inter, Arial, sans-serif";
+    const titleW = ctx.measureText(title).width;
+    ctx.font = "10px Inter, Arial, sans-serif";
+    const subW = ctx.measureText(sub).width;
+
+    const box = {
+        x: flight.x + 12,
+        y: flight.y - 34,
+        w: Math.max(titleW, subW) + 20,
+        h: 34
+    };
+
+    // flip label to the left when it would run off the right edge
+    if(box.x + box.w > W) box.x = flight.x - 12 - box.w;
+    if(box.y < 0) box.y = flight.y + 10;
+
+    // skip labels that would overlap another label or the HUD
+    if(occupied.some(o => boxesOverlap(o, box))) return;
+    occupied.push(box);
+
+    ctx.save();
+
+    // glass panel
+    roundedRect(box.x, box.y, box.w, box.h, 6);
+    ctx.fillStyle = "rgba(2,6,23,0.82)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(56,189,248,0.3)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // AI risk stripe
+    roundedRect(box.x, box.y, 3, box.h, 2);
+    ctx.fillStyle = RISK_COLORS[flight.aiRisk];
+    ctx.fill();
+
+    ctx.font = "600 11px Inter, Arial, sans-serif";
+    ctx.fillStyle = "#bae6fd";
+    ctx.fillText(title, box.x + 10, box.y + 14);
+
+    ctx.font = "10px Inter, Arial, sans-serif";
+    ctx.fillStyle = "rgba(226,232,240,0.7)";
+    ctx.fillText(sub, box.x + 10, box.y + 27);
+
+    ctx.restore();
+}
+
+function drawFlights(occupied){
 
     flights.forEach(flight => {
 
@@ -1250,9 +1651,11 @@ function drawFlights(){
 
         flight.trail.push({x: flight.x, y: flight.y});
 
-        if(flight.trail.length > 15){
+        if(flight.trail.length > 20){
             flight.trail.shift();
         }
+
+        ctx.save();
 
         // motion trail
         for(let i=0;i<flight.trail.length;i++){
@@ -1260,9 +1663,9 @@ function drawFlights(){
             const p = flight.trail[i];
 
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+            ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2);
 
-            ctx.fillStyle = `rgba(56,189,248,${i/15})`;
+            ctx.fillStyle = `rgba(56,189,248,${i/40})`;
             ctx.fill();
         }
 
@@ -1271,11 +1674,11 @@ function drawFlights(){
         ctx.moveTo(flight.x, flight.y);
 
         ctx.lineTo(
-            flight.x + flight.vx * 25,
-            flight.y + flight.vy * 25
+            flight.x + flight.vx * 30,
+            flight.y + flight.vy * 30
         );
 
-        ctx.strokeStyle = "rgba(0,255,255,0.45)";
+        ctx.strokeStyle = "rgba(0,255,255,0.4)";
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -1301,132 +1704,65 @@ function drawFlights(){
             color = "#ffee00";
         }
         else{
-            color = "#ff4444";
+            color = "#ff6b6b";
         }
+
+        // engine glow halo
+        ctx.beginPath();
+        ctx.arc(flight.x, flight.y, 10, 0, Math.PI * 2);
+        ctx.globalAlpha = 0.15;
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
 
         // aircraft dot
         ctx.beginPath();
-        ctx.arc(flight.x, flight.y, 6, 0, Math.PI * 2);
+        ctx.arc(flight.x, flight.y, 4, 0, Math.PI * 2);
 
         ctx.fillStyle = color;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 12;
         ctx.shadowColor = color;
         ctx.fill();
 
-        // engine glow pulse
-        ctx.beginPath();
-        ctx.arc(flight.x, flight.y, 14, 0, Math.PI * 2);
-        ctx.fillStyle = color.replace(')', ',0.08)').replace('rgb', 'rgba');
-        ctx.fill();
-
-        // =========================
-        // ADVANCED AIRCRAFT HUD
-        // =========================
-
-        const hudX = flight.x + 12;
-        const hudY = flight.y - 12;
-
-        // HUD glass panel
-        ctx.fillStyle = "rgba(2,6,23,0.65)";
-        ctx.fillRect(hudX - 4, hudY - 28, 165, 62);
-
-        ctx.strokeStyle = "rgba(56,189,248,0.35)";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(hudX - 4, hudY - 28, 165, 62);
-
-        // airline + model
-        ctx.font = "bold 10px Arial";
-        ctx.fillStyle = "#7dd3fc";
-
-        ctx.fillText(
-            flight.airline + " " + flight.model,
-            hudX,
-            hudY - 12
-        );
-
-        // route
-        ctx.font = "9px Arial";
-        ctx.fillStyle = "rgba(255,255,255,0.72)";
-
-        ctx.fillText(
-            flight.route,
-            hudX,
-            hudY + 2
-        );
-
-        // telemetry
-        ctx.fillText(
-            flight.altitude + " ft | " + flight.speed + " km/h",
-            hudX,
-            hudY + 16
-        );
-
-        // AI risk coloring
-        let riskColor = "#4ade80";
-
-        if(flight.aiRisk === "MEDIUM"){
-            riskColor = "#facc15";
-        }
-        else if(flight.aiRisk === "HIGH"){
-            riskColor = "#38bdf8";
-        }
-
-        ctx.fillStyle = riskColor;
-        ctx.font = "bold 9px Arial";
-
-        ctx.fillText(
-            "AI Risk: " + flight.aiRisk,
-            hudX,
-            hudY + 30
-        );
+        ctx.shadowBlur = 0;
 
         // radar sweep detection pulse
-        const sweepX = radarCenterX + radarRadius * Math.cos(angle);
-        const sweepY = radarCenterY + radarRadius * Math.sin(angle);
+        const flightAngle = Math.atan2(flight.y - radarCenterY, flight.x - radarCenterX);
+        const sweepDiff = Math.abs(((angle - flightAngle) % (Math.PI*2) + Math.PI*3) % (Math.PI*2) - Math.PI);
+        const flightDist = Math.hypot(flight.x - radarCenterX, flight.y - radarCenterY);
 
-        const sweepDist = Math.sqrt(
-            Math.pow(flight.x - sweepX,2) +
-            Math.pow(flight.y - sweepY,2)
-        );
-
-        if(sweepDist < 30){
+        if(sweepDiff < 0.12 && flightDist < radarRadius){
 
             ctx.beginPath();
-            ctx.arc(flight.x, flight.y, 18, 0, Math.PI*2);
+            ctx.arc(flight.x, flight.y, 12, 0, Math.PI*2);
 
-            ctx.strokeStyle = "rgba(0,255,180,0.45)";
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(0,255,180,0.6)";
+            ctx.lineWidth = 1.5;
             ctx.stroke();
         }
 
-        // heading direction arrow
-        ctx.beginPath();
-        ctx.moveTo(flight.x, flight.y);
+        ctx.restore();
 
-        ctx.lineTo(
-            flight.x + Math.cos(flight.heading * Math.PI/180) * 16,
-            flight.y + Math.sin(flight.heading * Math.PI/180) * 16
-        );
-
-        ctx.strokeStyle = "rgba(125,211,252,0.6)";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        drawFlightLabel(flight, occupied);
 
         // recycle aircraft if out of bounds
         if(
             flight.x < -50 ||
-            flight.x > canvas.width + 50 ||
+            flight.x > W + 50 ||
             flight.y < -50 ||
-            flight.y > canvas.height + 50
+            flight.y > H + 50
         ){
             const pos = randomEdgePosition();
             flight.x = pos.x;
             flight.y = pos.y;
+            flight.trail = [];
         }
     });
 }
 
 function detectCollisions(){
+
+    ctx.save();
 
     for(let i=0;i<flights.length;i++){
 
@@ -1437,90 +1773,140 @@ function detectCollisions(){
 
             const dist = Math.sqrt(dx*dx + dy*dy);
 
-            if(dist < 60){
+            if(dist < 40){
 
                 ctx.beginPath();
-                ctx.arc(flights[i].x, flights[i].y, 12, 0, Math.PI*2);
+                ctx.arc(flights[i].x, flights[i].y, 10, 0, Math.PI*2);
 
-            ctx.strokeStyle =
-                Date.now()%500<250
-                ? "rgba(0,255,255,0.9)"
-                : "rgba(125,211,252,0.5)";
+                ctx.strokeStyle =
+                    Date.now()%500<250
+                    ? "rgba(239,68,68,0.9)"
+                    : "rgba(239,68,68,0.4)";
 
-                ctx.lineWidth = 5;
-                ctx.shadowBlur = 25;
-            ctx.shadowColor = "#38bdf8";
+                ctx.lineWidth = 2;
                 ctx.stroke();
             }
         }
     }
+
+    ctx.restore();
+}
+
+function getHudBox(){
+    return { x: W - 226, y: 12, w: 214, h: 150 };
 }
 
 function drawRadarHUD(){
 
-    ctx.font = "bold 13px Arial";
-    ctx.fillStyle = "rgba(180,240,255,0.95)";
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "rgba(56,189,248,0.8)";
+    const box = getHudBox();
 
-    ctx.fillText(
-        "Tracked Flights: " + flights.length,
-        canvas.width - 180,
-        30
-    );
+    ctx.save();
 
-    ctx.fillText(
-        "AI Risk Level: " + window.currentAIRisk,
-        canvas.width - 180,
-        50
-    );
+    roundedRect(box.x, box.y, box.w, box.h, 12);
+    ctx.fillStyle = "rgba(2,6,23,0.85)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(56,189,248,0.35)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
-    ctx.fillText(
-        "Sweep Online",
-        canvas.width - 180,
-        70
-    );
+    const left = box.x + 14;
+    let y = box.y + 24;
 
-    ctx.fillText(
-        "AI Weather: " + window.currentAIWeather,
-        canvas.width - 180,
-        90
-    );
+    const rows = [
+        ["Tracked flights", flights.length],
+        ["AI risk level", window.currentAIRisk],
+        ["Weather", window.currentAIWeather]
+    ];
 
-    ctx.fillText(
-        "Adaptive ML Active",
-        canvas.width - 180,
-        110
-    );
+    rows.forEach(([label, value]) => {
+        ctx.font = "11px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(186,230,253,0.6)";
+        ctx.fillText(label, left, y);
 
-    ctx.fillText(
-        "Aircraft Telemetry Linked",
-        canvas.width - 180,
-        130
-    );
+        ctx.font = "600 12px Inter, Arial, sans-serif";
+        ctx.fillStyle = "#e0f2fe";
+        const text = String(value);
+        ctx.fillText(text, box.x + box.w - 14 - ctx.measureText(text).width, y);
 
-    ctx.fillText(
-        "AI Threat Analysis Running",
-        canvas.width - 180,
-        150
-    );
+        y += 20;
+    });
+
+    // divider
+    ctx.beginPath();
+    ctx.moveTo(left, y - 8);
+    ctx.lineTo(box.x + box.w - 14, y - 8);
+    ctx.strokeStyle = "rgba(56,189,248,0.2)";
+    ctx.stroke();
+
+    y += 8;
+
+    const pulse = 0.55 + 0.45 * Math.sin(Date.now() * 0.004);
+
+    ["Sweep online", "Adaptive ML active", "Telemetry linked", "Threat analysis running"].forEach(status => {
+        ctx.beginPath();
+        ctx.arc(left + 3, y - 4, 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(34,197,94,${pulse})`;
+        ctx.fill();
+
+        ctx.font = "11px Inter, Arial, sans-serif";
+        ctx.fillStyle = "rgba(134,239,172,0.9)";
+        ctx.fillText(status, left + 14, y);
+
+        y += 17;
+    });
+
+    ctx.restore();
+}
+
+function drawLegend(){
+
+    ctx.save();
+
+    const items = [["Low risk", RISK_COLORS.LOW], ["Medium", RISK_COLORS.MEDIUM], ["High", RISK_COLORS.HIGH]];
+    const boxW = 216;
+    const x = 12;
+    const y = H - 34;
+
+    roundedRect(x, y, boxW, 24, 8);
+    ctx.fillStyle = "rgba(2,6,23,0.8)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(56,189,248,0.25)";
+    ctx.stroke();
+
+    let cx = x + 12;
+    ctx.font = "11px Inter, Arial, sans-serif";
+
+    items.forEach(([label, color]) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(cx, y + 8, 3, 9);
+        ctx.fillStyle = "rgba(226,232,240,0.75)";
+        ctx.fillText(label, cx + 8, y + 16);
+        cx += ctx.measureText(label).width + 22;
+    });
+
+    ctx.restore();
+
+    return { x, y, w: boxW, h: 24 };
 }
 
 function radar(){
 
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(W > 0){
 
-    // cinematic dark fade layer
-    ctx.fillStyle = "rgba(0,5,15,0.12)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.clearRect(0,0,W,H);
 
-    drawRadarGrid();
-    drawRadarSweep();
-    drawFlights();
-    detectCollisions();
-    drawRadarHUD();
+        drawRadarGrid();
+        drawRadarSweep();
 
-    angle += 0.028;
+        const occupied = [getHudBox(), { x: 12, y: H - 34, w: 216, h: 24 }];
+
+        drawFlights(occupied);
+        detectCollisions();
+        drawRadarHUD();
+        drawLegend();
+
+        angle += 0.022;
+    }
 
     requestAnimationFrame(radar);
 }
@@ -1803,7 +2189,7 @@ function updateAlertsPage(data){
 
         if(value > 75){
             status = "Critical";
-            color = "#38bdf8";
+            color = "#ef4444";
         }
         else if(value > 55){
             status = "Busy";
