@@ -1,5 +1,7 @@
 # ✈️ Airsys — Airport AI System
 
+🌐 **Live demo:** [airsys.netlify.app](https://airsys.netlify.app)
+
 An AI-powered airport intelligence platform that predicts **crowd levels**, **flight delays** and **operational risk** for major international airports. It combines machine-learning models with live weather and flight data, and includes a chat assistant that answers questions about airports in plain English.
 
 ## Features
@@ -72,7 +74,7 @@ Open `frontend/index.html` in a browser. The frontend uses the hosted backend at
 ## Deployment
 
 - **Backend**: Render, with Root Directory set to `backend`
-- **Frontend**: Netlify, by uploading the `frontend/` folder
+- **Frontend**: Netlify, by uploading the `frontend/` folder ([airsys.netlify.app](https://airsys.netlify.app))
 
 ## Author
 
