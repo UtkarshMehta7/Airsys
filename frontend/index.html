@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport AI System</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #020617, #0f172a, #020617);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            display: block;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /*
+        body::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(255,0,0,0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0,150,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+        }
+        */
+
+        body::before {
+            content: "";
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(56,189,248,0.2), transparent 70%);
+            top: -200px;
+            left: -200px;
+            z-index: 0;
+        }
+
+        .soft-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(56,189,248,0.25), transparent 70%);
+            filter: blur(100px);
+            animation: float 8s infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            from { transform: translate(-100px, -50px); }
+            to { transform: translate(100px, 50px); }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            max-width: 1000px;
+            padding: 20px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(56,189,248,0.25), transparent 70%);
+            filter: blur(120px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .hero-vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6));
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hero-focus {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 60%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-cursor-light {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(56,189,248,0.25), transparent 60%);
+            filter: blur(80px);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 1; /* above glow, below content */
+        }
+
+        h1 {
+            font-size: 72px;
+            margin-top: 10px;
+            background: linear-gradient(270deg, #38bdf8, #6366f1, #22d3ee);
+            background-size: 600% 600%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            animation: gradientMove 6s ease infinite;
+            text-shadow:
+                0 0 25px rgba(56,189,248,0.8),
+                0 0 60px rgba(56,189,248,0.4);
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        p {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        button {
+            position: relative;
+            overflow: hidden;
+            padding: 14px 30px;
+            font-size: 16px;
+            background: linear-gradient(45deg, #38bdf8, #6366f1);
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            color: white;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(99,102,241,0.5);
+            z-index: 6;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            background: rgba(255,255,255,0.5);
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+            top: -100%;
+            left: -100%;
+            transition: 0.4s;
+            z-index: 0;
+        }
+
+        button:hover::before {
+            top: 0;
+            left: 0;
+        }
+
+        button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 40px rgba(99,102,241,0.8);
+        }
+        /* Cursor glow effect */
+        .cursor-glow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(56,189,248,0.3), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
+
+        /* Floating particles canvas */
+        #particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: red;
+            filter: blur(120px);
+            opacity: 0.2;
+            animation: move 6s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-100px, -100px); }
+            to { transform: translate(100px, 100px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /*
+        button {
+            animation: pulse 2s infinite;
+        }
+        */
+
+        /* ---- Aircraft themed backgrounds ---- */
+        .aircraft-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('IMG5.png'), url('IMG6.png');
+            background-size: cover, contain;
+            background-position: center, bottom right;
+            background-repeat: no-repeat, no-repeat;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+            animation: aircraftFloat 20s ease-in-out infinite alternate;
+            filter: blur(1px);
+        }
+
+        @keyframes aircraftFloat {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.02); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        .aircraft-overlay {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 400px;
+            height: 300px;
+            background: radial-gradient(circle at center, rgba(56,189,248,0.15), transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* New flying planes styles */
+        /* Removed old flying-plane styles */
+
+        /* New cinematic aircraft layer styles */
+        .aircraft-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .aircraft-item {
+            position: absolute;
+            width: 140px;
+            opacity: 0.07;
+            transition: 1s ease;
+            filter: blur(0.5px);
+            animation: driftAircraft linear infinite;
+        }
+
+        .aircraft-item:hover {
+            opacity: 0.4;
+            transform: scale(1.1);
+        }
+
+        @keyframes floatAircraft {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- Aircraft glowing trail --- */
+        .aircraft-trail {
+            position: absolute;
+            width: 2px;
+            height: 120px;
+            background: linear-gradient(to top, rgba(56,189,248,0.6), transparent);
+            opacity: 0.4;
+            transform-origin: bottom;
+            pointer-events: none;
+            animation: trailFlow 6s linear infinite;
+        }
+
+        @keyframes driftAircraft {
+            0% {
+                transform: translateX(0px) translateY(0px);
+            }
+            50% {
+                transform: translateX(20px) translateY(-15px);
+            }
+            100% {
+                transform: translateX(0px) translateY(0px);
+            }
+        }
+
+        @keyframes trailFlow {
+            0% { transform: translateX(0px); }
+            100% { transform: translateX(100px); }
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 60px;
+
+            background: rgba(2, 6, 23, 0.75);
+            backdrop-filter: blur(14px);
+
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #38bdf8;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .logo-main {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(56,189,248,0.08);
+            padding: 4px;
+            box-shadow: 0 0 12px rgba(56,189,248,0.5),
+                        inset 0 0 8px rgba(56,189,248,0.2);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #38bdf8, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-logo {
+            width: 70px;
+            border-radius: 12px;
+            background: rgba(56,189,248,0.08);
+            padding: 6px;
+            box-shadow: 0 0 20px rgba(56,189,248,0.7),
+                        0 0 40px rgba(99,102,241,0.4);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Advanced hero logo system --- */
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0.2; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .hero-logo-container {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            gap:20px;
+        }
+
+        .hero-logo-box {
+            position:relative;
+            padding:22px;
+            border-radius:24px;
+            background:rgba(56,189,248,0.06);
+            box-shadow:
+                0 0 60px rgba(56,189,248,0.9),
+                0 0 180px rgba(56,189,248,0.4),
+                0 0 300px rgba(99,102,241,0.2),
+                inset 0 0 40px rgba(255,255,255,0.06);
+            backdrop-filter:blur(12px);
+            animation: floatCore 4s ease-in-out infinite;
+        }
+
+        .hero-logo-box img {
+            width:180px;
+            border-radius:18px;
+            display:block;
+        }
+        @keyframes floatCore {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .hero-logo-pulse {
+            position:absolute;
+            inset:-12px;
+            border-radius:26px;
+            border:1px solid rgba(56,189,248,0.5);
+            animation: pulseRing 3s infinite;
+        }
+
+        .nav-links a {
+            color: #cbd5f5;
+            margin-left: 30px;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: #38bdf8;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #38bdf8;
+        }
+
+        section {
+            min-height: 100vh;
+            padding-top: 120px;
+            padding-left: 20px;
+            padding-right: 20px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1s forwards;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 100px 20px;
+            }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            margin: 15px;
+            border-radius: 16px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(56,189,248,0.3);
+        }
+
+        /*
+        .status-panel {
+            position: absolute;
+            top: 80px;
+            right: 40px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,0,0,0.4);
+            padding: 10px 15px;
+            font-size: 12px;
+            box-shadow: 0 0 10px red;
+            z-index: 10;
+        }
+
+        .status-panel div {
+            margin: 5px 0;
+        }
+
+        .status-green { color: #00ff9c; }
+        .status-red { color: red; }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: red;
+            top: 0;
+            animation: scan 4s linear infinite;
+            z-index: 11;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        */
+    </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="aircraft-bg"></div>
+<div class="aircraft-layer">
+    <!-- dynamically filled -->
+</div>
+
+<!-- Multiple flying aircraft using local images -->
+<!-- Removed old flying planes block -->
+
+<div class="aircraft-overlay"></div>
+
+<div class="soft-glow"></div>
+
+<nav class="navbar">
+    <div class="logo">
+        <img src="logo.png" alt="AIRSYS Logo" class="logo-main">
+        <span class="logo-text">AIRSYS</span>
+    </div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#ai">AI</a>
+        <a href="#enter">Launch</a>
+    </div>
+</nav>
+
+<!--
+<div class="scanline"></div>
+<div class="status-panel">
+    <div class="status-green">● SYSTEM: ONLINE</div>
+    <div class="status-green">● AI CORE: ACTIVE</div>
+    <div class="status-red blink">● RISK ENGINE: MONITORING</div>
+</div>
+-->
+
+<div class="bg-glow"></div>
+
+<section id="home" style="position:relative;">
+    <div class="hero-glow"></div>
+    <div class="hero-focus"></div>
+    <div class="hero-cursor-light" id="heroLight"></div>
+    <div class="container">
+        <div class="hero-logo-container">
+            <div class="hero-logo-box">
+                <img src="logo.png">
+                <div class="hero-logo-pulse"></div>
+            </div>
+            <h1 style="margin:0;">AIRSYS</h1>
+        </div>
+        <p>Real-time aviation intelligence with AI, ML & live data</p>
+        <div class="subtitle">Smart • Predictive • Intelligent Aviation System</div>
+        <button onclick="enterSystem()">Enter Control Panel</button>
+    </div>
+</section>
+
+<section id="features">
+    <h1>⚡ Core Capabilities</h1>
+    <div style="display:flex;">
+        <div class="card">📡 Live Radar Tracking</div>
+        <div class="card">🧠 AI Decision Engine</div>
+        <div class="card">📊 Crowd Prediction</div>
+    </div>
+</section>
+
+<section id="ai">
+    <h1>🤖 AI Intelligence</h1>
+    <p style="max-width:600px;text-align:center;">
+        Advanced ATC-grade AI analyzing weather, traffic, and risk to generate real-time operational decisions.
+    </p>
+</section>
+
+<section id="enter">
+    <h1>🚀 Launch System</h1>
+    <button onclick="enterSystem()">Enter Control Panel</button>
+</section>
+
+<script>
+function enterSystem() {
+    window.location.href = "airport.html"; // goes to Flask route
+}
+
+// Cursor glow
+const glow = document.createElement("div");
+glow.className = "cursor-glow";
+document.body.appendChild(glow);
+
+document.addEventListener("mousemove", (e) => {
+    glow.style.left = e.clientX + "px";
+    glow.style.top = e.clientY + "px";
+});
+
+// Parallax effect
+window.addEventListener("mousemove", (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+
+    document.querySelectorAll(".aircraft-bg, .soft-glow").forEach(el => {
+        el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+});
+
+// Smart aircraft distribution
+const layer = document.querySelector(".aircraft-layer");
+
+for (let i = 1; i <= 34; i++) {
+    const img = document.createElement("img");
+    img.src = `IMG${i}.png`;
+    img.className = "aircraft-item";
+
+    // clustered air routes instead of random scatter
+    const routeY = 20 + (i % 4) * 20; // 4 horizontal air routes
+    img.style.top = routeY + "%";
+    img.style.left = Math.random() * 100 + "%";
+
+    // scale variation (depth)
+    const scale = 0.6 + Math.random() * 0.8;
+    img.style.transform = `scale(${scale}) rotate(${Math.random()*10 - 5}deg)`;
+
+    img.style.opacity = 0.1 + Math.random() * 0.2;
+
+    // create glowing trail
+    const trail = document.createElement("div");
+    trail.className = "aircraft-trail";
+    trail.style.left = img.style.left;
+    trail.style.top = routeY + "%";
+
+    layer.appendChild(trail);
+    layer.appendChild(img);
+}
+
+// Particle system
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+let particles = [];
+for (let i = 0; i < 80; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+    });
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(56,189,248,0.4)";
+
+    particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+// Hero cursor light movement with speed-based intensity
+const hero = document.getElementById("home");
+const heroLight = document.getElementById("heroLight");
+
+let lastX = 0;
+let lastY = 0;
+let lastTime = Date.now();
+
+hero.addEventListener("mousemove", (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    heroLight.style.left = x + "px";
+    heroLight.style.top = y + "px";
+
+    // Calculate speed
+    const now = Date.now();
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    const dt = now - lastTime || 1;
+
+    const speed = Math.sqrt(dx * dx + dy * dy) / dt;
+
+    // Map speed to intensity
+    const intensity = Math.min(0.5, 0.2 + speed * 2);
+
+    heroLight.style.background = `radial-gradient(circle, rgba(56,189,248,${intensity}), transparent 60%)`;
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastTime = now;
+});
+
+hero.addEventListener("mouseleave", () => {
+    heroLight.style.left = "50%";
+    heroLight.style.top = "50%";
+    heroLight.style.background = "radial-gradient(circle, rgba(56,189,248,0.25), transparent 60%)";
+});
+// Button ripple effect
+const buttons = document.querySelectorAll("button");
+
+buttons.forEach(button => {
+    button.addEventListener("click", function(e) {
+        const circle = document.createElement("span");
+        const diameter = Math.max(this.clientWidth, this.clientHeight);
+        const radius = diameter / 2;
+
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${e.clientX - this.getBoundingClientRect().left - radius}px`;
+        circle.style.top = `${e.clientY - this.getBoundingClientRect().top - radius}px`;
+        circle.classList.add("ripple");
+
+        const ripple = this.getElementsByClassName("ripple")[0];
+
+        if (ripple) {
+            ripple.remove();
+        }
+
+        this.appendChild(circle);
+    });
+});
+</script>
+
+</div>
+<div class="hero-vignette"></div>
+</body>
+</html>

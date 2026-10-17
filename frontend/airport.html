@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Airport AI System</title>
+<link rel="icon" type="image/png" href="logo.png">
+
+<style>
+/* CINEMATIC GLOBAL GLOW */
+body::after {
+    content:'';
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: radial-gradient(circle at center, rgba(56,189,248,0.08), transparent 70%);
+    pointer-events:none;
+    z-index:0;
+}
+
+/* PARALLAX LAYER */
+#aircraftLayer {
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    overflow:hidden;
+    z-index:0; /* bring forward */
+    pointer-events:none;
+}
+
+.aircraft {
+
+    position:absolute;
+
+    width:320px;
+
+    opacity:0.22;
+
+    filter:
+        blur(0.15px)
+        drop-shadow(0 0 40px rgba(56,189,248,0.95));
+
+    animation: fly linear infinite;
+
+    pointer-events:none;
+
+    mix-blend-mode: screen;
+
+    transform-style: preserve-3d;
+}
+
+.aircraft:nth-child(odd) {
+    filter: blur(0.5px) drop-shadow(0 0 8px #38bdf8);
+}
+
+.aircraft:nth-child(even) {
+    filter: blur(1px) drop-shadow(0 0 5px #38bdf8);
+}
+
+@keyframes fly {
+    from { transform: translateX(-200px) translateY(0px) rotate(5deg); }
+    to { transform: translateX(120vw) translateY(-50px) rotate(5deg); }
+}
+
+@keyframes flyReverse {
+    from { transform: translateX(120vw) translateY(0px) scaleX(-1); }
+    to { transform: translateX(-200px) translateY(-50px) scaleX(-1); }
+}
+
+@keyframes radarPulse {
+
+    0% {
+        transform: scale(0.9);
+        opacity: 0.15;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.35;
+    }
+
+    100% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes hudGlow {
+
+    0% {
+        text-shadow: 0 0 10px rgba(56,189,248,0.5);
+    }
+
+    50% {
+        text-shadow: 0 0 25px rgba(56,189,248,1);
+    }
+
+    100% {
+        text-shadow: 0 0 10px rgba(56,189,248,0.5);
+    }
+}
+
+/* DEPTH HOVER */
+.card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 0 30px rgba(56,189,248,0.7);
+}
+
+/* BUTTON RIPPLE */
+button:active {
+    transform: scale(0.92);
+}
+
+/* CHAT ENHANCED */
+.bot-msg {
+    background: linear-gradient(145deg, #020617, #000);
+    border-left:3px solid #38bdf8;
+    box-shadow:0 0 15px rgba(56,189,248,0.3);
+}
+
+/* SECTION FADE-IN */
+.section {
+    opacity:0;
+    transform:translateY(10px);
+}
+.section.active {
+    opacity:1;
+    transform:translateY(0);
+}
+
+body {
+    margin:0;
+    font-family: Inter, Arial, sans-serif;
+
+    background:
+        radial-gradient(circle at top, rgba(56,189,248,0.18), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(14,165,233,0.12), transparent 30%),
+        linear-gradient(135deg, #020617 0%, #000814 40%, #000000 100%);
+
+    color:#e5f3ff;
+    overflow-y:auto;
+    overflow-x:hidden;
+    min-height:100vh;
+}
+html, body {
+    min-height:100%;
+    height:auto;
+    scroll-behavior:smooth;
+}
+
+/* GLOBAL SMOOTHNESS */
+* { transition: all 0.3s ease; }
+
+/* SIDEBAR UPGRADE */
+.sidebar {
+    backdrop-filter: blur(18px);
+    background: linear-gradient(
+        180deg,
+        rgba(2,6,23,0.95),
+        rgba(0,0,0,0.85)
+    );
+    border:1px solid rgba(56,189,248,0.25);
+    box-shadow:0 0 35px rgba(56,189,248,0.15);
+}
+
+.sidebar button.active {
+    background:#38bdf8;
+    color:#000;
+    box-shadow:0 0 15px #38bdf8;
+}
+
+/* CHAT MODERN */
+.msg {
+    padding:10px 14px;
+    margin:8px;
+    border-radius:12px;
+    max-width:70%;
+}
+
+.user-msg {
+    background:#1f2937;
+    margin-left:auto;
+}
+
+.bot-msg {
+    background:#020617;
+    border-left:3px solid #38bdf8;
+}
+
+.feedback button {
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.feedback button:hover {
+    transform:scale(1.2);
+}
+
+/* CARD DEPTH */
+.card {
+    position: relative;
+    background: rgba(0,0,0,0.15); /* much more transparent */
+    backdrop-filter: blur(4px);
+    border:1px solid rgba(56,189,248,0.6);
+    border-radius:10px;
+    padding:10px;
+    z-index:2;
+}
+
+/* RISK BAR SMOOTH */
+#riskFill {
+    transition: width 0.6s ease;
+}
+
+/* CURSOR LIGHT */
+#cursorLight {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(56,189,248,0.15), transparent);
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    z-index:0;
+}
+
+/* Layout */
+.layout {
+    display:grid;
+    grid-template-columns:230px 1fr;
+    gap:24px;
+    padding:24px;
+    min-height:100vh;
+    height:auto;
+    box-sizing:border-box;
+    align-items:start;
+}
+
+.sidebar {
+    width:230px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(2,6,23,0.95),
+            rgba(0,0,0,0.8)
+        );
+
+    border:1px solid rgba(56,189,248,0.35);
+
+    border-radius:24px;
+
+    padding:22px 16px;
+
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+
+    box-shadow:
+        0 0 40px rgba(56,189,248,0.12),
+        inset 0 0 25px rgba(56,189,248,0.08);
+
+    position:relative;
+    overflow:hidden;
+}
+
+.sidebar button {
+
+    background: rgba(15,23,42,0.55);
+
+    border:1px solid rgba(56,189,248,0.45);
+
+    color:#dff6ff;
+
+    padding:14px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    transition:0.35s ease;
+
+    font-size:15px;
+    font-weight:600;
+
+    letter-spacing:0.4px;
+
+    backdrop-filter: blur(10px);
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+.sidebar button:hover {
+    background:#38bdf8;
+    color:#000;
+    box-shadow:0 0 10px #38bdf8;
+}
+
+.section {
+    display:none;
+}
+
+.section.active {
+    display:block;
+}
+
+.panel {
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2,6,23,0.72),
+            rgba(0,0,0,0.52)
+        );
+
+    backdrop-filter: blur(16px);
+
+    border:1px solid rgba(56,189,248,0.28);
+
+    border-radius:28px;
+
+    padding:24px;
+
+    box-shadow:
+        0 0 40px rgba(56,189,248,0.12),
+        inset 0 0 25px rgba(255,255,255,0.02);
+
+    z-index:2;
+
+    overflow:hidden;
+    min-height:max-content;
+    overflow:visible;
+}
+
+.glow {
+    text-shadow:0 0 8px #38bdf8;
+}
+
+/* Chat */
+#chatbox {
+    height:70vh;
+    overflow-y:auto;
+    margin-bottom:10px;
+}
+
+input {
+    padding:10px;
+    background:#000;
+    border:1px solid #38bdf8;
+    color:#fff;
+}
+
+button {
+    padding:10px;
+    background:#38bdf8;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover {
+    box-shadow:0 0 10px #38bdf8;
+}
+
+/* Dashboard grid */
+.dashboard-grid {
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:15px;
+}
+
+.full {
+    grid-column: span 2;
+}
+
+.card {
+    border:1px solid #38bdf8;
+    border-radius:10px;
+    padding:10px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform:
+        translateY(-8px)
+        scale(1.02)
+        rotateX(2deg);
+
+    box-shadow:
+        0 0 25px rgba(56,189,248,0.45),
+        0 0 80px rgba(56,189,248,0.18),
+        inset 0 0 30px rgba(255,255,255,0.04);
+}
+
+#radarCanvas {
+    width:100%;
+    height:320px;
+    border-radius:24px;
+
+    background:
+        radial-gradient(circle at center,
+        rgba(0,255,180,0.12) 0%,
+        rgba(0,180,255,0.08) 25%,
+        rgba(0,20,40,0.92) 65%,
+        rgba(0,0,0,0.98) 100%);
+
+    box-shadow:
+        inset 0 0 120px rgba(0,255,180,0.08),
+        inset 0 0 220px rgba(56,189,248,0.06),
+        0 0 45px rgba(56,189,248,0.12);
+
+    overflow:hidden;
+    position:relative;
+}
+
+.alert-high { color:red; }
+.alert-medium { color:orange; }
+.alert-low { color:lightgreen; }
+
+#alertsList li {
+    padding:6px;
+    border-bottom:1px solid rgba(56,189,248,0.2);
+}
+body::before {
+
+    content:'';
+
+    position:fixed;
+
+    inset:0;
+
+    background-image:
+        linear-gradient(
+            rgba(56,189,248,0.03) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(56,189,248,0.03) 1px,
+            transparent 1px
+        );
+
+    background-size:40px 40px;
+
+    pointer-events:none;
+
+    z-index:0;
+}
+
+::-webkit-scrollbar {
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(56,189,248,0.45);
+    border-radius:999px;
+}
+
+body {
+    overflow-y:auto !important;
+}
+
+.layout,
+.panel,
+.dashboard-grid,
+.card {
+    overflow:visible;
+}
+.decision-box {
+
+    background:rgba(2,6,23,0.65);
+
+    border:1px solid rgba(56,189,248,0.25);
+
+    padding:14px;
+
+    border-radius:14px;
+
+    color:#dff6ff;
+
+    box-shadow:
+        inset 0 0 20px rgba(56,189,248,0.04),
+        0 0 15px rgba(56,189,248,0.08);
+}
+
+.global-airport {
+
+    background:rgba(2,6,23,0.7);
+
+    border:1px solid rgba(56,189,248,0.22);
+
+    border-radius:14px;
+
+    padding:12px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+}
+
+.flight-incident {
+
+    background:rgba(0,0,0,0.32);
+
+    border-left:3px solid #38bdf8;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    color:#dff6ff;
+}
+
+.timeline-item {
+
+    margin-bottom:12px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:rgba(2,6,23,0.65);
+
+    border:1px solid rgba(56,189,248,0.18);
+}
+
+.security-grid {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+}
+
+.security-item {
+
+    background:rgba(2,6,23,0.72);
+
+    border:1px solid rgba(34,197,94,0.22);
+
+    color:#86efac;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+
+<div id="cursorLight"></div>
+
+<div id="aircraftLayer"></div>
+
+<div class="layout">
+
+    <!-- SIDEBAR MENU -->
+    <div id="sidebar" class="sidebar">
+        <h2 class="glow"
+style="
+font-size:34px;
+letter-spacing:1px;
+margin-bottom:10px;
+">
+<div style="display:flex;align-items:center;gap:12px;">
+    <img src="logo.png" style="
+        width:40px;
+        height:40px;
+        border-radius:10px;
+        padding:4px;
+        background:rgba(56,189,248,0.08);
+        box-shadow:
+            0 0 12px rgba(56,189,248,0.6),
+            inset 0 0 8px rgba(56,189,248,0.2);
+    ">
+    <div style="display:flex;flex-direction:column;">
+        <span style="
+            font-size:20px;
+            font-weight:700;
+            letter-spacing:2px;
+            background:linear-gradient(90deg,#38bdf8,#6366f1);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        ">
+        AIRSYS
+        </span>
+    </div>
+</div>
+</h2>
+
+<div style="
+font-size:11px;
+color:#7dd3fc;
+opacity:0.7;
+margin-top:4px;
+margin-bottom:18px;
+letter-spacing:2px;
+padding-left:4px;
+">
+GLOBAL AVIATION INTELLIGENCE
+</div>
+        <button onclick="showSection('dashboard')">📊 Dashboard</button>
+        <button onclick="showSection('chat')">🤖 AI Chat</button>
+        <button onclick="showSection('alerts')">🚨 Alerts</button>
+    </div>
+
+    <!-- LEFT: CHAT -->
+    <div id="chatSection" class="panel section">
+        <h2 class="glow">🤖 AI Control</h2>
+        <div id="chatbox" class="card"></div>
+        <div style="display:flex; gap:10px;">
+            <input id="msg" placeholder="Ask airport status...">
+            <button onclick="send()">Send</button>
+        </div>
+    </div>
+
+    <!-- CENTER: MAIN SYSTEM -->
+    <div id="dashboardSection" class="panel section">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+    <img src="logo.png" style="
+        width:48px;
+        border-radius:12px;
+        box-shadow:0 0 15px rgba(56,189,248,0.7);
+    ">
+    <h2 class="glow" style="
+        font-size:46px;
+        font-weight:900;
+        letter-spacing:1.5px;
+        margin:0;
+        animation:hudGlow 3s infinite;
+    ">
+    Airport Command System
+    </h2>
+</div>
+<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
+<div style="padding:8px 16px;border-radius:999px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);color:#86efac;font-size:13px;">
+● SYSTEM ONLINE
+</div>
+<div style="padding:8px 16px;border-radius:999px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.35);color:#7dd3fc;font-size:13px;">
+LIVE AIRSPACE ANALYTICS
+</div>
+</div>
+        <p id="activeAirport" style="color:#38bdf8; margin-top:-5px;">Active: Delhi</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <div style="color:#38bdf8; font-weight:bold;">🌍 Global Hub Mode</div>
+
+            <select id="airportSelect" style="padding:12px 18px;background:rgba(2,6,23,0.8);color:#7dd3fc;border:1px solid rgba(56,189,248,0.5);border-radius:14px;font-size:14px;backdrop-filter:blur(10px);box-shadow:0 0 15px rgba(56,189,248,0.15);">
+                <option value="Delhi">🇮🇳 Delhi (Asia)</option>
+                <option value="Dubai">🇦🇪 Dubai (Middle East)</option>
+                <option value="Singapore">🇸🇬 Singapore (Asia)</option>
+                <option value="London">🇬🇧 Heathrow (Europe)</option>
+                <option value="Frankfurt">🇩🇪 Frankfurt (Europe)</option>
+                <option value="JFK">🇺🇸 New York (USA)</option>
+                <option value="LAX">🇺🇸 Los Angeles (USA)</option>
+                <option value="Sydney">🇦🇺 Sydney (Australia)</option>
+                <option value="Johannesburg">🇿🇦 Africa Hub</option>
+            </select>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <div class="card full">
+                <h3>📡 Radar</h3>
+                <canvas id="radarCanvas"></canvas>
+            </div>
+
+            <div class="card">
+                <h3>🌦 Weather</h3>
+                <p id="weatherText">--</p>
+                <p id="visibilityText">--</p>
+                <p id="tempText">--</p>
+            </div>
+
+            <div class="card">
+                <h3>⚠️ Risk</h3>
+                <p id="riskText">--</p>
+                <div style="height:10px; background:#333;">
+                    <div id="riskFill" style="height:100%; width:0%; background:red;"></div>
+                </div>
+            </div>
+
+            <div class="card full">
+                <h3>📈 Traffic</h3>
+                <canvas id="chart"></canvas>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RIGHT: ALERTS -->
+    <!-- RIGHT: ALERTS -->
+<div id="alertsSection" class="panel section">
+
+    <h2 class="glow"
+    style="
+    font-size:38px;
+    margin-bottom:18px;
+    animation:hudGlow 3s infinite;
+    ">
+    🚨 AI Aviation Intelligence Center
+    </h2>
+
+    <!-- LIVE ALERT FEED -->
+    <div class="card" style="margin-bottom:18px;">
+
+        <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:12px;
+        ">
+
+            <h3 style="margin:0;color:#7dd3fc;">
+            📡 Live Alert Feed
+            </h3>
+
+            <div style="
+            padding:6px 14px;
+            border-radius:999px;
+            background:rgba(34,197,94,0.12);
+            border:1px solid rgba(34,197,94,0.35);
+            color:#86efac;
+            font-size:12px;
+            ">
+            ● AI MONITORING ACTIVE
+            </div>
+        </div>
+
+        <ul id="alertsList"
+        style="
+        list-style:none;
+        padding:0;
+        margin:0;
+        max-height:240px;
+        overflow-y:auto;
+        ">
+        </ul>
+    </div>
+
+    <!-- AI DECISION ENGINE -->
+    <div class="card" style="margin-bottom:18px;">
+
+        <h3 style="color:#7dd3fc;margin-top:0;">
+        🧠 AI Decision Engine
+        </h3>
+
+        <div id="decisionEngine"
+        style="
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+        ">
+
+            <div class="decision-box">
+            ✈️ Monitoring airport operational stability
+            </div>
+
+        </div>
+    </div>
+
+    <!-- GLOBAL AIRSPACE STATUS -->
+    <div class="card" style="margin-bottom:18px;">
+
+        <h3 style="color:#7dd3fc;margin-top:0;">
+        🌍 Global Airspace Status
+        </h3>
+
+        <div id="globalStatus"
+        style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        ">
+        </div>
+    </div>
+
+    <!-- ACTIVE INCIDENTS -->
+    <div class="card" style="margin-bottom:18px;">
+
+        <h3 style="color:#7dd3fc;margin-top:0;">
+        ✈️ Active Flight Intelligence
+        </h3>
+
+        <div id="flightIncidents"
+        style="
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        ">
+        </div>
+    </div>
+
+    <!-- AI TIMELINE -->
+    <div class="card" style="margin-bottom:18px;">
+
+        <h3 style="color:#7dd3fc;margin-top:0;">
+        📈 AI Prediction Timeline
+        </h3>
+
+        <div id="timelineBox"></div>
+    </div>
+
+    <!-- SECURITY STATUS -->
+    <div class="card">
+
+        <h3 style="color:#7dd3fc;margin-top:0;">
+        🛡 Security & ML Systems
+        </h3>
+
+        <div class="security-grid">
+
+            <div class="security-item">🛡 ATC Link Secure</div>
+            <div class="security-item">🛡 Radar Integrity Stable</div>
+            <div class="security-item">🛡 ML Engine Active</div>
+            <div class="security-item">🛡 Threat Monitoring Enabled</div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+function showSection(section) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+
+    if(section === 'chat') {
+        document.getElementById('chatSection').classList.add('active');
+        document.querySelectorAll('.sidebar button')[1].classList.add('active');
+    }
+    if(section === 'dashboard') {
+        document.getElementById('dashboardSection').classList.add('active');
+        document.querySelectorAll('.sidebar button')[0].classList.add('active');
+    }
+    if(section === 'alerts') {
+        document.getElementById('alertsSection').classList.add('active');
+        document.querySelectorAll('.sidebar button')[2].classList.add('active');
+    }
+}
+
+// Default view
+showSection('dashboard');
+
+async function send() {
+    let input = document.getElementById("msg").value;
+    if(!input) return;
+    let chatbox = document.getElementById("chatbox");
+
+    chatbox.innerHTML += `<div class="msg user-msg">🧑 ${input}</div>`;
+
+    const airport = document.getElementById("airportSelect").value;
+    let res = await fetch("https://airport-ai-backend.onrender.com/chat", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({message: input, airport: airport})
+    });
+
+    let data = await res.json();
+
+    let reply = data.reply || "No response from AI";
+    chatbox.innerHTML += `
+<div class="msg bot-msg">
+🤖 ${reply}
+<div class="feedback">
+<button onclick="sendFeedback(true)">👍</button>
+<button onclick="sendFeedback(false)">👎</button>
+</div>
+</div>`;
+
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+// Feedback function for adaptive learning
+async function sendFeedback(isCorrect) {
+    const airport = document.getElementById("airportSelect").value;
+
+    try {
+        await fetch("https://airport-ai-backend.onrender.com/feedback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                correct: isCorrect,
+                issue: isCorrect ? "ok" : "crowd",
+                airport: airport,
+                time: 19,
+                passengers: 1500,
+                weather: "Clear",
+                correct_crowd: "High",
+                correct_delay: "Medium"
+            })
+        });
+
+        console.log("Feedback sent:", isCorrect);
+
+    } catch (e) {
+        console.error("Feedback error", e);
+    }
+}
+
+// ---------------- DASHBOARD CORE ----------------
+let chartInstance = null;
+
+async function loadDashboard(airport = "Delhi") {
+    document.getElementById("activeAirport").innerText = "Active: " + airport;
+    try {
+        const res = await fetch(`https://airport-ai-backend.onrender.com/dashboard-data?airport=${airport}`);
+        const data = await res.json();
+
+        // Weather
+        document.getElementById("weatherText").innerText = data.weather || "--";
+        document.getElementById("visibilityText").innerText = data.visibility || "--";
+        document.getElementById("tempText").innerText = data.temperature || "--";
+
+        // Risk
+        let risk = data.risk_score || 0;
+        window.currentAIRisk = risk;
+        window.currentAIWeather = data.weather || "Clear";
+        window.currentAIDelay = data.insight || "Normal";
+        document.getElementById("riskText").innerText = risk;
+        document.getElementById("riskFill").style.width = risk + "%";
+
+        if (risk > 70) document.getElementById("riskFill").style.background = "red";
+        else if (risk > 40) document.getElementById("riskFill").style.background = "orange";
+        else document.getElementById("riskFill").style.background = "lightgreen";
+
+        // Alerts
+        let alertsBox = document.getElementById("alertsList");
+        alertsBox.innerHTML = "";
+        (data.alerts || []).forEach(a => {
+            let li = document.createElement("li");
+            li.innerText = a;
+            alertsBox.appendChild(li);
+        });
+
+        // Chart
+        let times = Object.keys(data.time_vs_passengers || {});
+        let values = Object.values(data.time_vs_passengers || {});
+
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(document.getElementById("chart"), {
+            type: "line",
+            data: {
+                labels: times,
+                datasets: [{ label: "Traffic", data: values }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // AI Insight
+        const aiInsightElement = document.getElementById("aiInsight");
+
+        if(aiInsightElement){
+            aiInsightElement.innerText = data.insight
+                ? data.insight
+                : "Monitoring conditions...";
+        }
+
+        // Sync Alerts Intelligence Center
+        updateAlertsPage(data);
+
+    } catch (e) {
+        console.error("Dashboard load failed", e);
+    }
+}
+
+// Auto load dashboard
+const defaultAirport = document.getElementById("airportSelect").value;
+loadDashboard(defaultAirport);
+
+document.getElementById("airportSelect").addEventListener("change", function(){
+    const selected = this.value;
+    loadDashboard(selected);
+});
+
+// =========================
+// ADVANCED CINEMATIC RADAR
+// =========================
+
+let canvas = document.getElementById("radarCanvas");
+let ctx = canvas.getContext("2d");
+
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
+
+let angle = 0;
+
+const radarCenterX = canvas.width / 2;
+const radarCenterY = canvas.height / 2;
+const radarRadius = 120;
+
+let flights = [];
+window.currentAIRisk = 40;
+window.currentAIWeather = "Clear";
+window.currentAIDelay = "Normal";
+
+function getFlightCount(airport){
+
+    let base = 12;
+
+    if(airport === "Delhi") base = 18;
+    else if(airport === "Dubai") base = 20;
+    else if(airport === "Singapore") base = 14;
+    else if(airport === "London") base = 16;
+    else if(airport === "Frankfurt") base = 13;
+    else if(airport === "JFK") base = 22;
+    else if(airport === "LAX") base = 19;
+    else if(airport === "Sydney") base = 9;
+    else if(airport === "Johannesburg") base = 11;
+
+    // AI crowd influence
+    if(window.currentAIRisk > 70){
+        base += 8;
+    }
+    else if(window.currentAIRisk > 40){
+        base += 4;
+    }
+
+    return base;
+}
+
+function randomEdgePosition(){
+    const edge = Math.floor(Math.random() * 4);
+
+    if(edge === 0){
+        return { x: 0, y: Math.random() * canvas.height };
+    }
+
+    if(edge === 1){
+        return { x: canvas.width, y: Math.random() * canvas.height };
+    }
+
+    if(edge === 2){
+        return { x: Math.random() * canvas.width, y: 0 };
+    }
+
+    return {
+        x: Math.random() * canvas.width,
+        y: canvas.height
+    };
+}
+
+function createFlights(){
+
+    flights = [];
+
+    const airport = document.getElementById("airportSelect").value;
+    const count = getFlightCount(airport);
+
+    for(let i=0;i<count;i++){
+
+        const pos = randomEdgePosition();
+
+        const angle = Math.random() * Math.PI * 2;
+        let speed = Math.random() * 1.5 + 0.5;
+
+        // AI delay prediction effect
+        if(String(window.currentAIDelay).toLowerCase().includes("delay")){
+            speed *= 0.45;
+        }
+
+        const airlines = [
+            "Emirates","Lufthansa","Air India","Qatar","Singapore",
+            "British Airways","Delta","United","Qantas","IndiGo"
+        ];
+
+        const aircraftModels = [
+            "A320","A350","A380","B737","B777","B787"
+        ];
+
+        const routes = [
+            "DXB → DEL",
+            "LHR → JFK",
+            "SIN → SYD",
+            "FRA → DXB",
+            "DEL → LAX",
+            "JFK → LHR",
+            "SYD → SIN"
+        ];
+
+        flights.push({
+            x: pos.x,
+            y: pos.y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            altitude: Math.floor(Math.random() * 40000),
+            speed: Math.floor(Math.random() * 300 + 650),
+            heading: Math.floor(Math.random() * 360),
+            airline: airlines[Math.floor(Math.random()*airlines.length)],
+            model: aircraftModels[Math.floor(Math.random()*aircraftModels.length)],
+            route: routes[Math.floor(Math.random()*routes.length)],
+            aiRisk: ["LOW","MEDIUM","HIGH"][Math.floor(Math.random()*3)],
+            trail: []
+        });
+    }
+}
+
+createFlights();
+
+function drawRadarGrid(){
+
+    // outer holographic glow
+    const gradient = ctx.createRadialGradient(
+        radarCenterX,
+        radarCenterY,
+        20,
+        radarCenterX,
+        radarCenterY,
+        radarRadius + 80
+    );
+
+    gradient.addColorStop(0, "rgba(0,255,180,0.18)");
+    gradient.addColorStop(0.4, "rgba(0,180,255,0.08)");
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // animated concentric rings
+    for(let i=1;i<=4;i++){
+
+        ctx.beginPath();
+
+        ctx.arc(
+            radarCenterX,
+            radarCenterY,
+            radarRadius * (i/4),
+            0,
+            Math.PI * 2
+        );
+
+        ctx.strokeStyle = `rgba(56,189,248,${0.15 + i*0.08})`;
+        ctx.lineWidth = i === 4 ? 2.5 : 1;
+
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "rgba(56,189,248,0.4)";
+
+        ctx.stroke();
+    }
+
+    // rotating pulse ring
+    ctx.beginPath();
+    ctx.arc(
+        radarCenterX,
+        radarCenterY,
+        radarRadius + Math.sin(Date.now()*0.002)*8,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.strokeStyle = "rgba(0,255,180,0.12)";
+    ctx.lineWidth = 8;
+    ctx.stroke();
+
+    // crosshair lines
+    ctx.beginPath();
+    ctx.moveTo(radarCenterX - radarRadius - 30, radarCenterY);
+    ctx.lineTo(radarCenterX + radarRadius + 30, radarCenterY);
+
+    ctx.moveTo(radarCenterX, radarCenterY - radarRadius - 30);
+    ctx.lineTo(radarCenterX, radarCenterY + radarRadius + 30);
+
+    ctx.strokeStyle = "rgba(56,189,248,0.12)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // weather fog effect
+    if(String(window.currentAIWeather).toLowerCase().includes("fog")){
+
+        ctx.fillStyle = "rgba(255,255,255,0.04)";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+}
+
+function drawRadarSweep(){
+
+    const sweepGradient = ctx.createLinearGradient(
+        radarCenterX,
+        radarCenterY,
+        radarCenterX + radarRadius * Math.cos(angle),
+        radarCenterY + radarRadius * Math.sin(angle)
+    );
+
+    sweepGradient.addColorStop(0, "rgba(0,255,180,0)");
+    sweepGradient.addColorStop(0.4, "rgba(0,255,180,0.18)");
+    sweepGradient.addColorStop(1, "rgba(0,255,180,0.95)");
+
+    ctx.beginPath();
+    ctx.moveTo(radarCenterX, radarCenterY);
+
+    ctx.lineTo(
+        radarCenterX + radarRadius * Math.cos(angle),
+        radarCenterY + radarRadius * Math.sin(angle)
+    );
+
+    ctx.strokeStyle = sweepGradient;
+    ctx.lineWidth = 4;
+
+    ctx.shadowBlur = 35;
+    ctx.shadowColor = "rgba(0,255,180,0.9)";
+
+    ctx.stroke();
+
+    // sweep glow cone
+    ctx.beginPath();
+    ctx.moveTo(radarCenterX, radarCenterY);
+
+    ctx.arc(
+        radarCenterX,
+        radarCenterY,
+        radarRadius,
+        angle - 0.15,
+        angle + 0.15
+    );
+
+    ctx.closePath();
+
+    ctx.fillStyle = "rgba(0,255,180,0.05)";
+    ctx.fill();
+}
+
+function drawFlights(){
+
+    flights.forEach(flight => {
+
+        flight.x += flight.vx;
+        flight.y += flight.vy;
+
+        flight.trail.push({x: flight.x, y: flight.y});
+
+        if(flight.trail.length > 15){
+            flight.trail.shift();
+        }
+
+        // motion trail
+        for(let i=0;i<flight.trail.length;i++){
+
+            const p = flight.trail[i];
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+
+            ctx.fillStyle = `rgba(56,189,248,${i/15})`;
+            ctx.fill();
+        }
+
+        // prediction vector
+        ctx.beginPath();
+        ctx.moveTo(flight.x, flight.y);
+
+        ctx.lineTo(
+            flight.x + flight.vx * 25,
+            flight.y + flight.vy * 25
+        );
+
+        ctx.strokeStyle = "rgba(0,255,255,0.45)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // =========================
+        // AI ANOMALY DETECTION
+        // =========================
+        let anomaly = false;
+
+        if(window.currentAIRisk > 75 && Math.random() > 0.85){
+            anomaly = true;
+        }
+
+        // altitude color coding
+        let color = "#00ffcc";
+
+        if(anomaly){
+            color = Date.now()%400<200 ? "#7dd3fc" : "#00ffcc";
+        }
+        else if(flight.altitude > 30000){
+            color = "#00ffff";
+        }
+        else if(flight.altitude > 15000){
+            color = "#ffee00";
+        }
+        else{
+            color = "#ff4444";
+        }
+
+        // aircraft dot
+        ctx.beginPath();
+        ctx.arc(flight.x, flight.y, 6, 0, Math.PI * 2);
+
+        ctx.fillStyle = color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = color;
+        ctx.fill();
+
+        // engine glow pulse
+        ctx.beginPath();
+        ctx.arc(flight.x, flight.y, 14, 0, Math.PI * 2);
+        ctx.fillStyle = color.replace(')', ',0.08)').replace('rgb', 'rgba');
+        ctx.fill();
+
+        // =========================
+        // ADVANCED AIRCRAFT HUD
+        // =========================
+
+        const hudX = flight.x + 12;
+        const hudY = flight.y - 12;
+
+        // HUD glass panel
+        ctx.fillStyle = "rgba(2,6,23,0.65)";
+        ctx.fillRect(hudX - 4, hudY - 28, 165, 62);
+
+        ctx.strokeStyle = "rgba(56,189,248,0.35)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(hudX - 4, hudY - 28, 165, 62);
+
+        // airline + model
+        ctx.font = "bold 10px Arial";
+        ctx.fillStyle = "#7dd3fc";
+
+        ctx.fillText(
+            flight.airline + " " + flight.model,
+            hudX,
+            hudY - 12
+        );
+
+        // route
+        ctx.font = "9px Arial";
+        ctx.fillStyle = "rgba(255,255,255,0.72)";
+
+        ctx.fillText(
+            flight.route,
+            hudX,
+            hudY + 2
+        );
+
+        // telemetry
+        ctx.fillText(
+            flight.altitude + " ft | " + flight.speed + " km/h",
+            hudX,
+            hudY + 16
+        );
+
+        // AI risk coloring
+        let riskColor = "#4ade80";
+
+        if(flight.aiRisk === "MEDIUM"){
+            riskColor = "#facc15";
+        }
+        else if(flight.aiRisk === "HIGH"){
+            riskColor = "#38bdf8";
+        }
+
+        ctx.fillStyle = riskColor;
+        ctx.font = "bold 9px Arial";
+
+        ctx.fillText(
+            "AI Risk: " + flight.aiRisk,
+            hudX,
+            hudY + 30
+        );
+
+        // radar sweep detection pulse
+        const sweepX = radarCenterX + radarRadius * Math.cos(angle);
+        const sweepY = radarCenterY + radarRadius * Math.sin(angle);
+
+        const sweepDist = Math.sqrt(
+            Math.pow(flight.x - sweepX,2) +
+            Math.pow(flight.y - sweepY,2)
+        );
+
+        if(sweepDist < 30){
+
+            ctx.beginPath();
+            ctx.arc(flight.x, flight.y, 18, 0, Math.PI*2);
+
+            ctx.strokeStyle = "rgba(0,255,180,0.45)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // heading direction arrow
+        ctx.beginPath();
+        ctx.moveTo(flight.x, flight.y);
+
+        ctx.lineTo(
+            flight.x + Math.cos(flight.heading * Math.PI/180) * 16,
+            flight.y + Math.sin(flight.heading * Math.PI/180) * 16
+        );
+
+        ctx.strokeStyle = "rgba(125,211,252,0.6)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // recycle aircraft if out of bounds
+        if(
+            flight.x < -50 ||
+            flight.x > canvas.width + 50 ||
+            flight.y < -50 ||
+            flight.y > canvas.height + 50
+        ){
+            const pos = randomEdgePosition();
+            flight.x = pos.x;
+            flight.y = pos.y;
+        }
+    });
+}
+
+function detectCollisions(){
+
+    for(let i=0;i<flights.length;i++){
+
+        for(let j=i+1;j<flights.length;j++){
+
+            const dx = flights[i].x - flights[j].x;
+            const dy = flights[i].y - flights[j].y;
+
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            if(dist < 60){
+
+                ctx.beginPath();
+                ctx.arc(flights[i].x, flights[i].y, 12, 0, Math.PI*2);
+
+            ctx.strokeStyle =
+                Date.now()%500<250
+                ? "rgba(0,255,255,0.9)"
+                : "rgba(125,211,252,0.5)";
+
+                ctx.lineWidth = 5;
+                ctx.shadowBlur = 25;
+            ctx.shadowColor = "#38bdf8";
+                ctx.stroke();
+            }
+        }
+    }
+}
+
+function drawRadarHUD(){
+
+    ctx.font = "bold 13px Arial";
+    ctx.fillStyle = "rgba(180,240,255,0.95)";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "rgba(56,189,248,0.8)";
+
+    ctx.fillText(
+        "Tracked Flights: " + flights.length,
+        canvas.width - 180,
+        30
+    );
+
+    ctx.fillText(
+        "AI Risk Level: " + window.currentAIRisk,
+        canvas.width - 180,
+        50
+    );
+
+    ctx.fillText(
+        "Sweep Online",
+        canvas.width - 180,
+        70
+    );
+
+    ctx.fillText(
+        "AI Weather: " + window.currentAIWeather,
+        canvas.width - 180,
+        90
+    );
+
+    ctx.fillText(
+        "Adaptive ML Active",
+        canvas.width - 180,
+        110
+    );
+
+    ctx.fillText(
+        "Aircraft Telemetry Linked",
+        canvas.width - 180,
+        130
+    );
+
+    ctx.fillText(
+        "AI Threat Analysis Running",
+        canvas.width - 180,
+        150
+    );
+}
+
+function radar(){
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // cinematic dark fade layer
+    ctx.fillStyle = "rgba(0,5,15,0.12)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    drawRadarGrid();
+    drawRadarSweep();
+    drawFlights();
+    detectCollisions();
+    drawRadarHUD();
+
+    angle += 0.028;
+
+    requestAnimationFrame(radar);
+}
+
+radar();
+
+// regenerate flights on airport switch
+document.getElementById("airportSelect").addEventListener("change", () => {
+    createFlights();
+});
+
+document.addEventListener("mousemove", (e) => {
+    const light = document.getElementById("cursorLight");
+    light.style.left = e.clientX + "px";
+    light.style.top = e.clientY + "px";
+
+    // Parallax effect for aircraft layer
+    const layer = document.getElementById("aircraftLayer");
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    layer.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+// 🔥 Dynamic Aircraft System (labeled images)
+const aircraftLayer = document.getElementById("aircraftLayer");
+
+const aircraftImages = [
+    "IMG1.png","IMG2.png","IMG3.png","IMG4.png","IMG5.png","IMG6.png",
+    "IMG7.png","IMG8.png","IMG9.png","IMG10.png","IMG11.png","IMG12.png",
+    "IMG13.png","IMG14.png","IMG15.png","IMG16.png","IMG17.png","IMG18.png",
+    "IMG19.png","IMG20.png","IMG21.png","IMG22.png","IMG23.png","IMG24.png",
+    "IMG25.png","IMG26.png","IMG27.png","IMG28.png","IMG29.png","IMG30.png",
+    "IMG31.png","IMG32.png","IMG33.png","IMG34.png"
+];
+
+function createAircraft() {
+    const img = document.createElement("img");
+
+    // Random image from aircraftImages
+    const imgName = aircraftImages[Math.floor(Math.random() * aircraftImages.length)];
+    img.src = `./static/${imgName}`;
+    // debug if image fails
+    img.onerror = () => {
+        console.error("Image failed:", img.src);
+    };
+
+    // Rendering fix for image scaling and clarity
+    img.style.objectFit = "contain";
+    img.style.imageRendering = "auto";
+    // img.style.border = "1px solid red"; // DEBUG: Uncomment to see box
+
+    img.classList.add("aircraft");
+
+    // Random vertical position
+    img.style.top = Math.random() * 90 + "%";
+
+    // Random direction (left→right OR right→left)
+    const reverse = Math.random() > 0.5;
+
+    const duration = Math.random() * 20 + 20;
+    img.style.animationDuration = duration + "s";
+
+    // Depth tiers (near, mid, far)
+    const depth = Math.random();
+
+    if (depth < 0.33) {
+        img.style.width = "260px"; // near
+        img.style.opacity = "0.45";
+    } else if (depth < 0.66) {
+        img.style.width = "200px"; // mid
+        img.style.opacity = "0.35";
+    } else {
+        img.style.width = "140px"; // far
+        img.style.opacity = "0.25";
+    }
+
+    // Random slight rotation
+    const rotation = Math.random() * 10 - 5;
+
+    if (reverse) {
+        img.style.transform = `scaleX(-1) rotate(${rotation}deg)`;
+        img.style.animationName = "flyReverse";
+    } else {
+        img.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    aircraftLayer.appendChild(img);
+
+    // Remove after animation ends
+    setTimeout(() => {
+        img.remove();
+    }, duration * 1000);
+}
+
+// Spawn continuously
+setInterval(createAircraft, 2000);
+
+// Special aircraft (rare, cinematic)
+setInterval(() => {
+    const img = document.createElement("img");
+    const imgName = aircraftImages[Math.floor(Math.random() * aircraftImages.length)];
+    img.src = `./static/${imgName}`;
+    img.onerror = () => {
+        console.error("Image failed:", img.src);
+    };
+
+    img.classList.add("aircraft");
+    img.style.top = Math.random() * 80 + "%";
+    img.style.width = "220px";
+    img.style.opacity = "0.25";
+    img.style.animationDuration = "40s";
+
+    aircraftLayer.appendChild(img);
+
+    setTimeout(() => img.remove(), 40000);
+}, 15000);
+
+// =========================
+// AI ALERT INTELLIGENCE ENGINE
+// =========================
+
+function updateAlertsPage(data){
+
+    const alertsBox = document.getElementById("alertsList");
+    const decisionBox = document.getElementById("decisionEngine");
+    const globalStatus = document.getElementById("globalStatus");
+    const incidents = document.getElementById("flightIncidents");
+    const timeline = document.getElementById("timelineBox");
+
+    if(!alertsBox) return;
+
+    alertsBox.innerHTML = "";
+
+    const airport = document.getElementById("airportSelect").value;
+
+    const risk = data.risk_score || 0;
+
+    let airportAlerts = {
+        "Delhi": [
+            "⚠ Heavy passenger congestion detected at Terminal 3",
+            "⚠ AI predicting evening traffic surge over North corridor",
+            "⚠ Runway sequencing optimization enabled",
+            "⚠ Domestic departure queues increasing",
+            "⚠ Fog-risk monitoring active for late-night operations"
+        ],
+
+        "Dubai": [
+            "⚠ Emirates long-haul traffic density increasing",
+            "⚠ Heatwave operational monitoring active",
+            "⚠ AI cargo route balancing enabled",
+            "⚠ International transit load above normal",
+            "⚠ Smart runway allocation system active"
+        ],
+
+        "Singapore": [
+            "⚠ Changi passenger flow reaching peak levels",
+            "⚠ AI weather adaptation monitoring active",
+            "⚠ Southeast Asia transit traffic increasing",
+            "⚠ Smart immigration load balancing enabled",
+            "⚠ Runway maintenance optimization running"
+        ],
+
+        "London": [
+            "⚠ Heathrow experiencing transatlantic congestion",
+            "⚠ Visibility reduction detected over airspace",
+            "⚠ AI delay prediction elevated",
+            "⚠ Arrival holding pattern monitoring active",
+            "⚠ Weather-linked traffic balancing enabled"
+        ],
+
+        "Frankfurt": [
+            "⚠ European cargo traffic increasing",
+            "⚠ AI freight prioritization active",
+            "⚠ Transit gate utilization above threshold",
+            "⚠ Weather corridor optimization running",
+            "⚠ Smart taxiway routing enabled"
+        ],
+
+        "JFK": [
+            "⚠ New York airspace congestion detected",
+            "⚠ Atlantic inbound traffic increasing",
+            "⚠ AI runway balancing enabled",
+            "⚠ Delay escalation monitoring active",
+            "⚠ Passenger security load above normal"
+        ],
+
+        "LAX": [
+            "⚠ Pacific route traffic density elevated",
+            "⚠ Hollywood event traffic impact predicted",
+            "⚠ AI smart gate allocation active",
+            "⚠ Crosswind operational monitoring enabled",
+            "⚠ International arrivals congestion detected"
+        ],
+
+        "Sydney": [
+            "⚠ Oceanic route coordination active",
+            "⚠ AI weather tracking enabled",
+            "⚠ Morning departure rush predicted",
+            "⚠ Smart runway allocation stable",
+            "⚠ International terminal traffic increasing"
+        ],
+
+        "Johannesburg": [
+            "⚠ African regional traffic balancing active",
+            "⚠ AI security monitoring elevated",
+            "⚠ Cargo corridor utilization increasing",
+            "⚠ Thunderstorm pattern tracking active",
+            "⚠ Airspace optimization engine enabled"
+        ]
+    };
+
+    const dynamicAlerts = airportAlerts[airport] || [
+        "⚠ AI monitoring active",
+        "⚠ Operational analytics online"
+    ];
+
+    dynamicAlerts.forEach(alert => {
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+        <div style="
+        padding:12px;
+        margin-bottom:10px;
+        border-radius:12px;
+        background:rgba(2,6,23,0.72);
+        border-left:3px solid #38bdf8;
+        box-shadow:0 0 15px rgba(56,189,248,0.08);
+        ">
+        ${alert}
+        </div>
+        `;
+
+        alertsBox.appendChild(li);
+    });
+
+    // AI decisions
+    decisionBox.innerHTML = `
+
+    <div class="decision-box">
+    ✈️ AI recommends traffic balancing for ${airport}
+    </div>
+
+    <div class="decision-box">
+    📡 Delay probability analysis active
+    </div>
+
+    <div class="decision-box">
+    🧠 Adaptive ML monitoring runway load patterns
+    </div>
+
+    <div class="decision-box">
+    🌦 Weather impact stabilization engine online
+    </div>
+    `;
+
+    // Dynamic Global Risk (based on current airport risk)
+    const baseRisk = data.risk_score || 50;
+
+    const airportList = [
+        "Delhi","Dubai","Singapore","London",
+        "Frankfurt","JFK","LAX","Sydney","Johannesburg"
+    ];
+
+    const airportRisks = {};
+
+    airportList.forEach(name => {
+        // generate variation around base risk
+        let variation = Math.floor(Math.random() * 30) - 15;
+        let value = Math.max(20, Math.min(95, baseRisk + variation));
+        airportRisks[name] = value;
+    });
+
+    globalStatus.innerHTML = "";
+
+    Object.entries(airportRisks).forEach(([name,value]) => {
+
+        let status = "Stable";
+        let color = "#4ade80";
+
+        if(value > 75){
+            status = "Critical";
+            color = "#38bdf8";
+        }
+        else if(value > 55){
+            status = "Busy";
+            color = "#facc15";
+        }
+
+        globalStatus.innerHTML += `
+        <div class="global-airport">
+        <strong>${name}</strong>
+        <span>Risk: ${value}</span>
+        <span style="color:${color};">${status}</span>
+        </div>
+        `;
+    });
+
+    // Flight incidents (linked with radar flights)
+    incidents.innerHTML = "";
+
+    if (typeof flights !== "undefined" && flights.length > 0) {
+
+        const topFlights = flights.slice(0, 3);
+
+        topFlights.forEach(f => {
+
+            let status = "Normal monitoring";
+
+            if (window.currentAIRisk > 70) {
+                status = "High congestion monitoring";
+            } else if (String(window.currentAIWeather).toLowerCase().includes("fog")) {
+                status = "Weather impact stabilization";
+            } else if (String(window.currentAIDelay).toLowerCase().includes("delay")) {
+                status = "Delay mitigation active";
+            }
+
+            incidents.innerHTML += `
+            <div class="flight-incident">
+            ✈️ ${f.airline} ${f.model} → ${status}
+            </div>
+            `;
+        });
+
+    } else {
+
+        incidents.innerHTML = `
+        <div class="flight-incident">
+        ✈️ No active flight data available
+        </div>
+        `;
+    }
+
+    // Dynamic Timeline (real-time based)
+    timeline.innerHTML = "";
+
+    const now = new Date();
+
+    function formatTime(date){
+        return date.getHours().toString().padStart(2,'0') + ":" +
+               date.getMinutes().toString().padStart(2,'0');
+    }
+
+    const dynamicTimeline = [
+        `${formatTime(now)} → Traffic surge monitoring active`,
+        `${formatTime(new Date(now.getTime() + 30*60000))} → Weather impact analysis running`,
+        `${formatTime(new Date(now.getTime() + 60*60000))} → Runway optimization expected`
+    ];
+
+    dynamicTimeline.forEach(item => {
+        timeline.innerHTML += `
+        <div class="timeline-item">
+        ${item}
+        </div>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
